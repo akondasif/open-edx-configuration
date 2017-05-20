@@ -1,0 +1,260 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Open edX SG stack
+
+Parameters:
+  UniversityShortName:
+    Description: Identifies member university
+    Type: String
+  VPC:
+    Description: VPC to use
+    Type: "AWS::EC2::VPC::Id"
+
+Resources:
+  BuildSG:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: !Sub Open edX - ${UniversityShortName}, SG for build server
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub openedx-${UniversityShortName}-build
+  BuildSshIngress:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref BuildSG
+      IpProtocol: tcp
+      FromPort: "22"
+      ToPort: "22"
+      CidrIp: 0.0.0.0/0
+
+  ElbSG:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: !Sub Open edX - ${UniversityShortName}, SG for Elastic Load Balancer
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub openedx-${UniversityShortName}-elb
+  ElbHttpsIngress:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref ElbSG
+      IpProtocol: tcp
+      FromPort: "443"
+      ToPort: "443"
+      CidrIp: 0.0.0.0/0
+  ElbNginxIngress:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref ElbSG
+      IpProtocol: tcp
+      FromPort: "18010"
+      ToPort: "18010"
+      CidrIp: 0.0.0.0/0
+  ElbNginxSslIngress:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref ElbSG
+      IpProtocol: tcp
+      FromPort: "48010"
+      ToPort: "48010"
+      CidrIp: 0.0.0.0/0
+
+  AppSG:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: !Sub Open edX - ${UniversityShortName}, SG for server running LMS and CMS
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub openedx-${UniversityShortName}-app
+  AppSshIngress:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref AppSG
+      IpProtocol: tcp
+      FromPort: "22"
+      ToPort: "22"
+      SourceSecurityGroupId: !Ref BuildSG
+    DependsOn: BuildSG
+  AppHttpIngress:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref AppSG
+      IpProtocol: tcp
+      FromPort: "80"
+      ToPort: "80"
+      SourceSecurityGroupId: !Ref ElbSG
+    DependsOn: ElbSG
+  AppHttpsIngress:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref AppSG
+      IpProtocol: tcp
+      FromPort: "443"
+      ToPort: "443"
+      SourceSecurityGroupId: !Ref ElbSG
+    DependsOn: ElbSG
+  AppNginxIngress:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref AppSG
+      IpProtocol: tcp
+      FromPort: "18010"
+      ToPort: "18010"
+      SourceSecurityGroupId: !Ref ElbSG
+    DependsOn: ElbSG
+  AppNginxSslIngress:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref AppSG
+      IpProtocol: tcp
+      FromPort: "48010"
+      ToPort: "48010"
+      SourceSecurityGroupId: !Ref ElbSG
+    DependsOn: ElbSG
+
+  MongoSG:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: !Sub Open edX - ${UniversityShortName}, SG for servers running MongoDB
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub openedx-${UniversityShortName}-mongo
+  MongoSshIngressFromBuild:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref MongoSG
+      IpProtocol: tcp
+      FromPort: "22"
+      ToPort: "22"
+      SourceSecurityGroupId: !Ref BuildSG
+    DependsOn: BuildSG
+  MongoIngressFromApp:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref MongoSG
+      IpProtocol: tcp
+      FromPort: "27017"
+      ToPort: "27017"
+      SourceSecurityGroupId: !Ref AppSG
+    DependsOn: AppSG
+  MongoIngressFromMongo:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref MongoSG
+      IpProtocol: tcp
+      FromPort: "27017"
+      ToPort: "27017"
+      SourceSecurityGroupId: !Ref MongoSG
+    DependsOn: MongoSG
+  MongoSinatraIngressFromApp:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref MongoSG
+      IpProtocol: tcp
+      FromPort: "4567"
+      ToPort: "4567"
+      SourceSecurityGroupId: !Ref AppSG
+    DependsOn: AppSG
+  MongoForumsIngressFromApp:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref MongoSG
+      IpProtocol: tcp
+      FromPort: "18080"
+      ToPort: "18080"
+      SourceSecurityGroupId: !Ref AppSG
+    DependsOn: AppSG
+
+  CommonSG:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: !Sub Open edX - ${UniversityShortName}, SG for server running ElasticSearch, RabbitMQ, and Xqueue
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub openedx-${UniversityShortName}-common
+  CommonSshIngressFromBuild:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref CommonSG
+      IpProtocol: tcp
+      FromPort: "22"
+      ToPort: "22"
+      SourceSecurityGroupId: !Ref BuildSG
+    DependsOn: BuildSG
+  CommonElasticIngressFromApp:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref CommonSG
+      IpProtocol: tcp
+      FromPort: "9200"
+      ToPort: "9200"
+      SourceSecurityGroupId: !Ref AppSG
+    DependsOn: AppSG
+  CommonElasticIngressFromMongo:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref CommonSG
+      IpProtocol: tcp
+      FromPort: "9200"
+      ToPort: "9200"
+      SourceSecurityGroupId: !Ref MongoSG
+    DependsOn: MongoSG
+  CommonRabbitMQIngressFromApp:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref CommonSG
+      IpProtocol: tcp
+      FromPort: "5672"
+      ToPort: "5672"
+      SourceSecurityGroupId: !Ref AppSG
+    DependsOn: AppSG
+  CommonXQueueIngressFromApp:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref CommonSG
+      IpProtocol: tcp
+      FromPort: "18040"
+      ToPort: "18040"
+      SourceSecurityGroupId: !Ref AppSG
+    DependsOn: AppSG
+
+  RdsSG:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: !Sub Open edX - ${UniversityShortName}, SG for MySQL RDS
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub openedx-${UniversityShortName}-rds
+  RdsIngressFromBuild:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref RdsSG
+      IpProtocol: tcp
+      FromPort: "3306"
+      ToPort: "3306"
+      SourceSecurityGroupId: !Ref BuildSG
+    DependsOn: BuildSG
+  RdsIngressFromApp:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref RdsSG
+      IpProtocol: tcp
+      FromPort: "3306"
+      ToPort: "3306"
+      SourceSecurityGroupId: !Ref AppSG
+    DependsOn: AppSG
+  RdsIngressFromCommon:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref RdsSG
+      IpProtocol: tcp
+      FromPort: "3306"
+      ToPort: "3306"
+      SourceSecurityGroupId: !Ref CommonSG
+    DependsOn: CommonSG
+
