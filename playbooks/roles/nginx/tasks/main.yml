@@ -277,7 +277,7 @@
     owner: root
     group: root
     mode: 0644
-  when: ssl_cert.stat.exists and NGINX_ENABLE_SSL and NGINX_SSL_CERTIFICATE != 'ssl-cert-snakeoil.pem'
+  when: NGINX_ENABLE_SSL
   tags:
     - install
     - install:configuration
@@ -289,8 +289,8 @@
     owner: root
     group: root
     mode: 0640
-  when: ssl_key.stat.exists and NGINX_ENABLE_SSL and NGINX_SSL_KEY != 'ssl-cert-snakeoil.key'
   no_log: True
+  when: NGINX_ENABLE_SSL
   tags:
     - install
     - install:configuration

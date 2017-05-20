@@ -4,7 +4,7 @@ mongo_port: "27017"
 mongo_extra_conf: ''
 mongo_key_file: '/etc/mongodb_key'
 mongo_repl_set: rs0
-mongo_cluster_members: []
+mongo_cluster_members: [localhost]
 pymongo_version: 2.7.2
 
 mongo_data_dir: "{{ COMMON_DATA_DIR }}/mongo"
@@ -29,7 +29,7 @@ MONGO_USERS:
     database: edxapp
     roles: readWrite
 
-MONGO_CLUSTERED: false
+MONGO_CLUSTERED: true 
 MONGO_BIND_IP: 127.0.0.1
 
 MONGO_USE_SMALLFILES: true
@@ -64,4 +64,4 @@ mongo_s3_logfile: "{{ COMMON_LOG_DIR }}/mongo/s3-mongo-backup.log"
 MONGO_S3_S3CMD_CONFIG: "{{ COMMON_DATA_DIR }}/mongo-s3-backup.s3cfg"
 MONGO_S3_BACKUP_AWS_ACCESS_KEY: !!null
 MONGO_S3_BACKUP_AWS_SECRET_KEY: !!null
-
+MONGO_CLUSTER_KEY: 'password'

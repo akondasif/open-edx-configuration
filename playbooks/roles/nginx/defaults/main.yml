@@ -16,8 +16,8 @@ NGINX_USERS:
     password: "{{ COMMON_HTPASSWD_PASS }}"
     state: present
 
-NGINX_ENABLE_SSL: False
-NGINX_REDIRECT_TO_HTTPS: False
+NGINX_ENABLE_SSL: true 
+NGINX_REDIRECT_TO_HTTPS: True
 # Set these to real paths on your
 # filesystem, otherwise nginx will
 # use a self-signed snake-oil cert
@@ -31,9 +31,10 @@ NGINX_REDIRECT_TO_HTTPS: False
 # It should be set to one of !!null, "scheme" or "forward_for_proto"
 NGINX_HTTPS_REDIRECT_STRATEGY: "scheme"
 
-NGINX_SSL_CERTIFICATE: 'ssl-cert-snakeoil.pem'
-NGINX_SSL_KEY: 'ssl-cert-snakeoil.key'
 
+
+NGINX_SSL_CERTIFICATE: 'selfsigned.crt'
+NGINX_SSL_KEY: 'selfsigned.key'
 NGINX_LOG_FORMAT_NAME: 'p_combined'
 # When set to False, nginx will pass X-Forwarded-For, X-Forwarded-Port,
 # and X-Forwarded-Proto headers through to the backend unmodified.

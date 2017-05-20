@@ -65,7 +65,7 @@ certs_venv_bin: "{{ certs_venv_dir }}/bin"
 certs_git_ssh: /tmp/git_ssh.sh
 certs_git_identity: "{{ certs_app_dir }}/certs-git-identity"
 certs_requirements_file: "{{ certs_code_dir }}/requirements.txt"
-certs_version: 'master'
+certs_version: 'open-release/ficus.1'
 certs_gpg_dir: "{{ certs_app_dir }}/gnupg"
 certs_env_config:
   # CERTS_DATA is legacy, not used
