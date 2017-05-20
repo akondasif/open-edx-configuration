@@ -1,0 +1,13 @@
+# This role will launch ONe RDS instance and 4 application instances 
+# To see  the details and modify go to  defaults/main.yml 
+# in the relevant role 
+---
+- name: deploy edx infrastructure
+  hosts: all
+  vars:
+     name: unizin2
+     app_count: 1
+  roles: 
+    - create_rds
+    - create_instances
+...
