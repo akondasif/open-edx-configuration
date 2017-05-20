@@ -1,0 +1,20 @@
+---
+#
+# Defaults for role provison
+# 
+pem_file: openedx-staging
+instance: t2.small
+app_instance: t2.medium
+common_instance: t2.large
+ami: ami-45361120
+sg_prefix: "Open-edX-Unizin2-Security"
+edxapp_sg: "{{ sg_prefix }}-AppSG-1BO1K7SJAKZXC"
+mongo_sg: "{{ sg_prefix }}-MongoSG-YD4Q7GZRJ623"
+common_sg: "{{ sg_prefix }}-CommonSG-1G7017IFHDY4O"
+instance_region: us-east-2
+subnet: subnet-c23ccdab
+tag_app: "openedx-{{ name }}-app"
+tag_pmongo: "openedx-{{ name}}-mongo-1"
+tag_smongo: "openedx-{{ name }}-mongo-2"
+tag_rabbit: "openedx-{{ name }}-common"
+...

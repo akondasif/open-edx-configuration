@@ -1,0 +1,18 @@
+---
+# Defaults for role create_rds
+# 
+#
+rds_instance_name:  "openedx-rds-{{ name }}"
+db_size: 5
+db_instance_type: db.t2.micro
+
+rds_master_user: root
+rds_master_password: password
+
+rds_region: us-east-2
+rds_zone: us-east-2b
+rds_vpc_sg: sg-6ddc9604
+
+tag_environment: staging
+tag_application: "openedx-{{ name }}"
+...
