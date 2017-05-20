@@ -34,8 +34,6 @@
       - certs
       - cms
       - lms
-      - forum
-      - xqueue
       nginx_default_sites:
       - lms
 
@@ -45,46 +43,13 @@
       celery_worker: True
     - edxapp
 
-    # Discussion forums
-    # https://github.com/edx/cs_comments_service
-    - forum
 
     # Notifications service
     # https://github.com/edx/notifier
     - role: notifier
       NOTIFIER_DIGEST_TASK_INTERVAL: '5'
 
-    # XQueue interface for communicating with external grader services
-    # https://github.com/edx/xqueue
-    - role: xqueue
-      update_users: True
-
-    # Certificate generation
-    # https://github.com/edx/edx-certificates
+    - demo
     - certs
-
-    # Email sending
-    - postfix_queue
-
-    # Ecommerce (optional)
-    # https://github.com/edx/ecommerce
-    - role: nginx
-      nginx_sites:
-      - ecommerce
-      when: ENABLE_ECOMMERCE
-    - role: ecommerce
-      when: ENABLE_ECOMMERCE
-    - role: ecomworker
-      when: ENABLE_ECOMMERCE
-
     # memcached
     - role: memcache
-      when: "'localhost' in ' '.join(EDXAPP_MEMCACHE)"
-
-    # Optional extras
-    - role: datadog
-      when: COMMON_ENABLE_DATADOG
-    - role: splunkforwarder
-      when: COMMON_ENABLE_SPLUNKFORWARDER
-    - role: newrelic
-      when: COMMON_ENABLE_NEWRELIC
