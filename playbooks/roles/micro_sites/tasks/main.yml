@@ -1,0 +1,28 @@
+---
+#
+# Tasks for role micro_sites
+#
+# Description: Copy your site logo in files/edx-microsite directory
+# This role will upload it to edxapp server and script will 
+# update values in relevant fields.
+# the script is located in "playbooks" directory.
+
+- name: copy micro site image
+  copy:
+    src: edx-microsite/header-logo.png
+    dest: /edx/var/edxapp/staticfiles/images/
+    owner: edxapp
+    group: edxapp
+
+- name: update json file
+  script: update_lms_json.sh
+
+- name: restart edxapp
+  supervisorctl:
+    name: "edxapp:"
+    supervisorctl_path: /edx/bin/supervisorctl 
+#    config: "{{ supervisor_cfg }}"
+    state: restarted
+...
+
+
