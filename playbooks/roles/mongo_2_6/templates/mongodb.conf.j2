@@ -13,7 +13,7 @@ logappend={{ mongo_logappend }}
    otherwise only to the specified local ip.
 #}
 {% if not MONGO_CLUSTERED %}
-bind_ip = {{ MONGO_BIND_IP }}
+#bind_ip = {{ MONGO_BIND_IP }}
 {% endif %}
 
 {% if MONGO_USE_SMALLFILES %}
@@ -30,10 +30,10 @@ journal=false
 nojournal=true
 {% endif %}
 
-{% if MONGO_CLUSTERED %}
-keyFile = {{ mongo_key_file }}
-replSet = {{ mongo_repl_set }}
-{% endif %}
+#{% if MONGO_CLUSTERED %}
+#keyFile = {{ mongo_key_file }}
+#replSet = {{ mongo_repl_set }}
+#{% endif %}
 
 # Enables periodic logging of CPU utilization and I/O wait
 #cpu = true
@@ -101,6 +101,8 @@ replSet = {{ mongo_repl_set }}
 # or
 #master = true
 #source = slave.example.com
+keyFile = {{ mongo_key_file }}
+replSet = {{ mongo_repl_set }}
 
 # Address of a server to pair with.
 #pairwith = <server:port>

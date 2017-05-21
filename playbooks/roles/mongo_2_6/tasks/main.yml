@@ -123,7 +123,6 @@
     mode: "0600"
     owner: mongodb
     group: mongodb
-  when: MONGO_CLUSTERED
   tags:
     - install
     - install:configuration
@@ -155,30 +154,30 @@
     - manage
     - manage:start
 
-- name: Drop super user script
-  template:
-    src: "create_root.js.j2"
-    dest: "/tmp/create_root.js"
-  when: not MONGO_CLUSTERED
-  tags:
-    - install
-    - install:configuration
+#- name: Drop super user script
+#  template:
+#    src: "create_root.js.j2"
+#    dest: "/tmp/create_root.js"
+#  when: not MONGO_CLUSTERED
+#  tags:
+#    - install
+#    - install:configuration
 
-- name: Create super user with js
-  shell: "/usr/bin/mongo admin /tmp/create_root.js"
-  when: not MONGO_CLUSTERED
-  tags:
-    - install
-    - install:configuration
+#- name: Create super user with js
+#  shell: "/usr/bin/mongo admin /tmp/create_root.js"
+#  when: not MONGO_CLUSTERED
+#  tags:
+#    - install
+#    - install:configuration
 
-- name: Delete super user script
-  file:
-    path: /tmp/create_root.js
-    state: absent
-  when: not MONGO_CLUSTERED
-  tags:
-    - install
-    - install:configuration
+#- name: Delete super user script
+#  file:
+#    path: /tmp/create_root.js
+#    state: absent
+#  when: not MONGO_CLUSTERED
+#  tags:
+#    - install
+#    - install:configuration
 
 - name: Create the file to initialize the mongod replica set
   template:
@@ -200,20 +199,20 @@
 #  file: path=/tmp/repset_init.js state=absent
 #  when: MONGO_CLUSTERED
 
-- name: Create a mongodb user
-  mongodb_user:
-    database: "{{ item.database }}"
-    login_user: "{{ MONGO_ADMIN_USER }}"
-    login_password: "{{ MONGO_ADMIN_PASSWORD }}"
-    name: "{{ item.user }}"
-    password: "{{ item.password }}"
-    roles: "{{ item.roles }}"
-    state: present
-  with_items: "{{ MONGO_USERS }}"
-  when: not MONGO_CLUSTERED
-  tags:
-    - manage
-    - manage:app-users
+#- name: Create a mongodb user
+#  mongodb_user:
+#    database: "{{ item.database }}"
+#    login_user: "{{ MONGO_ADMIN_USER }}"
+#    login_password: "{{ MONGO_ADMIN_PASSWORD }}"
+#    name: "{{ item.user }}"
+#    password: "{{ item.password }}"
+#    roles: "{{ item.roles }}"
+#    state: present
+#    replica_set: "{{ mongo_repl_set }}"
+#  when: not MONGO_CLUSTERED
+#  tags:
+#    - manage
+#    - manage:app-users
 
 - name: Create a mongodb user
   mongodb_user:
