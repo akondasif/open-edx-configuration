@@ -53,3 +53,4 @@
     - certs
     # memcached
     - role: memcache
+    - edx_ansible
