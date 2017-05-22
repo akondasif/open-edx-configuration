@@ -4,66 +4,69 @@ edxlocal_debian_pkgs:
   - libjpeg-dev
 
 edxlocal_databases:
-  - "{{ ECOMMERCE_DEFAULT_DB_NAME | default(None) }}"
-  - "{{ INSIGHTS_DATABASE_NAME | default(None) }}"
-  - "{{ XQUEUE_MYSQL_DB_NAME | default(None) }}"
-  - "{{ EDXAPP_MYSQL_DB_NAME | default(None) }}"
-  - "{{ EDXAPP_MYSQL_CSMH_DB_NAME | default(None) }}"
-  - "{{ EDX_NOTES_API_MYSQL_DB_NAME | default(None) }}"
-  - "{{ PROGRAMS_DEFAULT_DB_NAME | default(None) }}"
-  - "{{ ANALYTICS_API_DEFAULT_DB_NAME | default(None) }}"
-  - "{{ ANALYTICS_API_REPORTS_DB_NAME | default(None) }}"
-  - "{{ CREDENTIALS_DEFAULT_DB_NAME | default(None) }}"
-  - "{{ DISCOVERY_DEFAULT_DB_NAME | default(None) }}"
+  - "{{ ECOMMERCE_DEFAULT_DB_NAME | default('ecommerce') }}"
+  - "{{ INSIGHTS_DATABASE_NAME | default('dashboard') }}"
+  - "{{ XQUEUE_MYSQL_DB_NAME | default('xqueue') }}"
+  - "{{ EDXAPP_MYSQL_DB_NAME | default('edxapp') }}"
+  - "{{ EDXAPP_MYSQL_CSMH_DB_NAME | default('edxapp_csmh') }}"
+  - "{{ EDX_NOTES_API_MYSQL_DB_NAME | default('edx-notes-api') }}"
+  - "{{ PROGRAMS_DEFAULT_DB_NAME | default('programs') }}"
+  - "{{ ANALYTICS_API_DEFAULT_DB_NAME | default('analytics-api') }}"
+  - "{{ ANALYTICS_API_REPORTS_DB_NAME | default('reports') }}"
+  - "{{ CREDENTIALS_DEFAULT_DB_NAME | default('credentials') }}"
+  - "{{ DISCOVERY_DEFAULT_DB_NAME | default('discovery') }}"
 
 edxlocal_database_users:
   - {
-      db: "{{ ECOMMERCE_DEFAULT_DB_NAME | default(None) }}",
-      user: "{{ ECOMMERCE_DATABASE_USER | default(None) }}",
-      pass: "{{ ECOMMERCE_DATABASE_PASSWORD | default(None) }}"
+      db: "{{ ECOMMERCE_DEFAULT_DB_NAME | default('ecommerce') }}",
+      user: "{{ ECOMMERCE_DATABASE_USER | default('ecomm001') }}",
+      pass: "{{ ECOMMERCE_DATABASE_PASSWORD | default('password') }}"
     }
   - {
-      db: "{{ INSIGHTS_DATABASE_NAME | default(None) }}",
-      user: "{{ INSIGHTS_MYSQL_USER | default(None) }}",
-      pass: "{{ INSIGHTS_MYSQL_USER | default(None) }}"
+      db: "{{ INSIGHTS_DATABASE_NAME | default('dashboard') }}",
+      user: "{{ INSIGHTS_MYSQL_USER | default('rosencrantz') }}",
+      pass: "{{ INSIGHTS_MYSQL_USER | default('secret') }}"
     }
   - {
-      db: "{{ XQUEUE_MYSQL_DB_NAME | default(None) }}",
-      user: "{{ XQUEUE_MYSQL_USER | default(None) }}",
-      pass: "{{ XQUEUE_MYSQL_PASSWORD | default(None) }}"
+      db: "{{ XQUEUE_MYSQL_DB_NAME | default('xqueue') }}",
+      user: "{{ XQUEUE_MYSQL_USER | default('xqueue001') }}",
+      pass: "{{ XQUEUE_MYSQL_PASSWORD | default('password') }}"
+    }
+
+  - {
+      db: "{{ EDXAPP_MYSQL_DB_NAME | default('edxapp001') }}",
+      user: "{{ EDXAPP_MYSQL_USER | default('admin') }}",
+      pass: "{{ EDXAPP_MYSQL_PASSWORD | default('password') }}"
+    }
+
+  - {
+      db: "{{ EDXAPP_MYSQL_CSMH_DB_NAME | default('edxapp_csmh') }}",
+      user: "{{ EDXAPP_MYSQL_CSMH_USER | default('edxapp_cmsh001') }}",
+      pass: "{{ EDXAPP_MYSQL_CSMH_PASSWORD | default('password') }}"
     }
   - {
-      db: "{{ EDXAPP_MYSQL_DB_NAME | default(None) }}",
-      user: "{{ EDXAPP_MYSQL_USER | default(None) }}",
-      pass: "{{ EDXAPP_MYSQL_PASSWORD | default(None) }}"
+      db: "{{ PROGRAMS_DEFAULT_DB_NAME | default('programs') }}",
+      user: "{{ PROGRAMS_DATABASE_USER | default('programs001') }}",
+      pass: "{{ PROGRAMS_DATABASE_PASSWORD | default('password') }}"
     }
   - {
-      db: "{{ EDXAPP_MYSQL_CSMH_DB_NAME | default(None) }}",
-      user: "{{ EDXAPP_MYSQL_CSMH_USER | default(None) }}",
-      pass: "{{ EDXAPP_MYSQL_CSMH_PASSWORD | default(None) }}"
+      db: "{{ ANALYTICS_PIPELINE_OUTPUT_DATABASE_NAME | default('reports001') }}",
+      user: "{{ ANALYTICS_PIPELINE_OUTPUT_DATABASE_USER | default('pipeline001') }}",
+      pass: "{{ ANALYTICS_PIPELINE_OUTPUT_DATABASE_PASSWORD | default('password') }}"
     }
   - {
-      db: "{{ PROGRAMS_DEFAULT_DB_NAME | default(None) }}",
-      user: "{{ PROGRAMS_DATABASE_USER | default(None) }}",
-      pass: "{{ PROGRAMS_DATABASE_PASSWORD | default(None) }}"
+      db: "{{ HIVE_METASTORE_DATABASE_NAME | default('edx_hive_metastore') }}",
+      user: "{{ HIVE_METASTORE_DATABASE_USER | default('edx_hive') }}",
+      pass: "{{ HIVE_METASTORE_DATABASE_PASSWORD | default('edx') }}"
     }
   - {
-      db: "{{ ANALYTICS_PIPELINE_OUTPUT_DATABASE_NAME | default(None) }}",
-      user: "{{ ANALYTICS_PIPELINE_OUTPUT_DATABASE_USER | default(None) }}",
-      pass: "{{ ANALYTICS_PIPELINE_OUTPUT_DATABASE_PASSWORD | default(None) }}"
+      db: "{{ CREDENTIALS_DEFAULT_DB_NAME | default('credentials') }}",
+      user: "{{ CREDENTIALS_MYSQL_USER | default('credentials001') }}",
+      pass: "{{ CREDENTIALS_MYSQL_PASSWORD | default('password') }}"
     }
   - {
-      db: "{{ HIVE_METASTORE_DATABASE_NAME | default(None) }}",
-      user: "{{ HIVE_METASTORE_DATABASE_USER | default(None) }}",
-      pass: "{{ HIVE_METASTORE_DATABASE_PASSWORD | default(None) }}"
+      db: "{{ DISCOVERY_DEFAULT_DB_NAME | default('discovery') }}",
+      user: "{{ DISCOVERY_MYSQL_USER | default('discov001') }}",
+      pass: "{{ DISCOVERY_MYSQL_PASSWORD | default('password') }}"
     }
-  - {
-      db: "{{ CREDENTIALS_DEFAULT_DB_NAME | default(None) }}",
-      user: "{{ CREDENTIALS_MYSQL_USER | default(None) }}",
-      pass: "{{ CREDENTIALS_MYSQL_PASSWORD | default(None) }}"
-    }
-  - {
-      db: "{{ DISCOVERY_DEFAULT_DB_NAME | default(None) }}",
-      user: "{{ DISCOVERY_MYSQL_USER | default(None) }}",
-      pass: "{{ DISCOVERY_MYSQL_PASSWORD | default(None) }}"
-    }
+
