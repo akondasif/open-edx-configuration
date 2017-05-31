@@ -13,6 +13,7 @@
    vpc_subnet_id: "{{ subnet }}" 
    instance_tags:
          Name: "{{ tag_pmongo }}"
+         Project: openedx
   
 - name: launch MongoDB SECONDARY
   ec2:
@@ -25,6 +26,8 @@
    vpc_subnet_id: "{{ subnet }}"
    instance_tags:
          Name: "{{ tag_smongo }}"
+         Project: openedx
+
 
 - name: launch Common Cluster Instance
   ec2:
@@ -37,6 +40,8 @@
    vpc_subnet_id: "{{ subnet }}"
    instance_tags:
          Name: "{{ tag_rabbit }}"
+         Project: openedx
+
 
 - name: launch EdXapp instance
   ec2:
@@ -50,4 +55,6 @@
    count: "{{ app_count }}"
    instance_tags:
          Name: "{{ tag_app }}"
+         Project: openedx
+
 ...
