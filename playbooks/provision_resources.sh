@@ -30,6 +30,7 @@ then
   ansible-playbook run_role.yml -e role=setup_rds
 elif [ "$1" = "common" ]
 then
+  scp -i ~/openedx-staging.pem /home/ubuntu/downloads/jdk-8u65-linux-x64.tar.gz "ubuntu@$rabbit:/var/tmp/"
   # Install RabbitMQ, ElasticSearch, Xqueue
   ansible-playbook -i "$rabbit," rabbit.yml -vvv --private-key=$private_key_path
 elif [ "$1" = "app" ]
