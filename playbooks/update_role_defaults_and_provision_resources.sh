@@ -1,10 +1,10 @@
-rds=openedx-rds-unizin2.cy45nlkcoymw.us-east-2.rds.amazonaws.com
+rds=openedx-rds-unizin2.cglg2lgriogm.us-east-1.rds.amazonaws.com
 domain=openedx-unizin2.testing.unizin.org
-app=172.31.12.222
-pmongo=172.31.3.13
-smongo=172.31.14.24
-elastic=172.31.14.126
-rabbit=172.31.14.126
+app=172.31.2.238
+pmongo=172.31.1.254
+smongo=172.31.6.130
+elastic=172.31.0.70
+rabbit=172.31.0.70
 # We need to modify these values in files 
 
 # rds

@@ -9,9 +9,9 @@ db_instance_type: db.t2.micro
 rds_master_user: root
 rds_master_password: password
 
-rds_region: us-east-2
-rds_zone: us-east-2b
-rds_vpc_sg: sg-6ddc9604
+rds_region: us-east-1
+rds_zone: us-east-1a
+rds_vpc_sg: sg-da8ab6a4
 
 tag_environment: staging
 tag_application: "openedx-{{ name }}"
