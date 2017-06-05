@@ -15,4 +15,5 @@ rds_vpc_sg: sg-da8ab6a4
 
 tag_environment: staging
 tag_application: "openedx-{{ name }}"
+project_tag: "openedx"
 ...

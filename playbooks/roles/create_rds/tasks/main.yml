@@ -17,4 +17,5 @@
      tags:
        Environment: "{{ tag_environment }}" 
        Application: "{{ tag_application }}"
+       Project: "{{ project_tag }}"
 ...

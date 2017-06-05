@@ -17,4 +17,5 @@ tag_app: "openedx-{{ name }}-app"
 tag_pmongo: "openedx-{{ name}}-mongo-1"
 tag_smongo: "openedx-{{ name }}-mongo-2"
 tag_rabbit: "openedx-{{ name }}-common"
+project_tag: "openedx"
 ...
