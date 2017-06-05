@@ -40,12 +40,12 @@ EDXAPP_LMS_MAX_REQ: !!null
 EDXAPP_CMS_MAX_REQ: !!null
 # 'None' will be written out as null in
 # the configuration on disk
-EDXAPP_AWS_ACCESS_KEY_ID:  "None"
-EDXAPP_AWS_SECRET_ACCESS_KEY:  "None"
+EDXAPP_AWS_ACCESS_KEY_ID:  ""
+EDXAPP_AWS_SECRET_ACCESS_KEY:  ""
 EDXAPP_AWS_QUERYSTRING_AUTH: false
-EDXAPP_AWS_STORAGE_BUCKET_NAME: "SET-ME-PLEASE (ex. bucket-name)"
-EDXAPP_IMPORT_EXPORT_BUCKET: "SET-ME-PLEASE (ex. bucket-name)"
-EDXAPP_AWS_S3_CUSTOM_DOMAIN: "SET-ME-PLEASE (ex. bucket-name.s3.amazonaws.com)"
+EDXAPP_AWS_STORAGE_BUCKET_NAME: "unizin-openedx-unizin2"
+EDXAPP_IMPORT_EXPORT_BUCKET: "unizin-openedx-unizin2"
+EDXAPP_AWS_S3_CUSTOM_DOMAIN: "unizin-openedx-unizin2.s3.amazonaws.com"
 EDXAPP_SWIFT_USERNAME: "None"
 EDXAPP_SWIFT_KEY: "None"
 EDXAPP_SWIFT_TENANT_ID: "None"
@@ -56,7 +56,7 @@ EDXAPP_SWIFT_REGION_NAME: "None"
 EDXAPP_SWIFT_USE_TEMP_URLS: false
 EDXAPP_SWIFT_TEMP_URL_KEY: "None"
 EDXAPP_SWIFT_TEMP_URL_DURATION: 1800  # seconds
-EDXAPP_DEFAULT_FILE_STORAGE:  "django.core.files.storage.FileSystemStorage"
+EDXAPP_DEFAULT_FILE_STORAGE:  "storages.backends.s3boto.S3BotoStorage"
 EDXAPP_XQUEUE_BASIC_AUTH: [ "{{ COMMON_HTPASSWD_USER }}", "{{ COMMON_HTPASSWD_PASS }}" ]
 EDXAPP_XQUEUE_DJANGO_AUTH:
   username: 'lms'
@@ -255,7 +255,7 @@ EDXAPP_BOOK_URL: ""
 EDXAPP_SITE_NAME: 'localhost'
 EDXAPP_LMS_SITE_NAME: "{{ EDXAPP_SITE_NAME }}"
 EDXAPP_CMS_SITE_NAME: 'localhost'
-EDXAPP_MEDIA_URL:  "/media"
+EDXAPP_MEDIA_URL:  "https://unizin-openedx-unizin2.s3.amazonaws.com/media"
 EDXAPP_ANALYTICS_SERVER_URL:  ""
 EDXAPP_FEEDBACK_SUBMISSION_EMAIL: ""
 EDXAPP_CELERY_BROKER_HOSTNAME: ""
@@ -327,9 +327,18 @@ EDXAPP_EDXMKTG_USER_INFO_COOKIE_NAME: "edx-user-info"
 EDXAPP_STATIC_URL_BASE: "/static/"
 
 # Settings for Grade downloads
-EDXAPP_GRADE_STORAGE_CLASS: 'django.core.files.storage.FileSystemStorage'
+EDXAPP_GRADE_STORAGE_CLASS: "{{ EDXAPP_DEFAULT_FILE_STORAGE }}"
+EDXAPP_GRADE_STORAGE_TYPE: "s3"
+EDXAPP_GRADE_BUCKET: "{{ EDXAPP_AWS_STORAGE_BUCKET_NAME }}"
+EDXAPP_GRADE_ROOT_PATH: "grades"
 EDXAPP_GRADE_STORAGE_KWARGS:
-  location: /tmp/edx-s3/grades
+  bucket: "{{ EDXAPP_AWS_STORAGE_BUCKET_NAME }}"
+  custom_domain: "{{ EDXAPP_AWS_S3_CUSTOM_DOMAIN }}"
+  querystring_expire: 300
+  gzip: true
+  querystring_auth: true
+  default_acl: "private"
+  locations:  "{{ COMMON_ENVIRONMENT }}-{{ COMMON_DEPLOYMENT }}"
 
 # Credit card processor
 # These are the same defaults set in common.py
@@ -559,10 +568,15 @@ EDXAPP_SOCIAL_SHARING_SETTINGS:
 #NB2: custom_domain is REQUIRED. Otherwise, boto will generate a
 # temporary URL whenever asked for the URL of a specific file.
 EDXAPP_PROFILE_IMAGE_BACKEND:
-  class: storages.backends.overwrite.OverwriteStorage
+  class: "{{ EDXAPP_DEFAULT_FILE_STORAGE }}"
   options:
-    location: "{{ edxapp_media_dir }}/profile-images/"
-    base_url: "{{ EDXAPP_MEDIA_URL }}/profile-images/"
+    bucket: "{{ EDXAPP_AWS_STORAGE_BUCKET_NAME }}"
+    location: "/images"
+    custom_domain: "{{ EDXAPP_AWS_S3_CUSTOM_DOMAIN }}"
+    access_key: "{{ EDXAPP_AWS_ACCESS_KEY_ID }}"
+    secret_key: "{{ EDXAPP_AWS_SECRET_ACCESS_KEY }}"
+    headers:
+      Cache-Control: max-age={{ EDXAPP_PROFILE_IMAGE_MAX_AGE }}
 
 EDXAPP_PROFILE_IMAGE_MAX_AGE: 31536000
 
@@ -648,7 +662,7 @@ edxapp_node_bin: "{{ edxapp_code_dir }}/node_modules/.bin"
 edxapp_user: edxapp
 edxapp_deploy_path: "{{ edxapp_venv_bin }}:{{ edxapp_code_dir }}/bin:{{ edxapp_node_bin }}:{{ edxapp_nodeenv_bin }}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 edxapp_staticfile_dir: "{{ edxapp_data_dir }}/staticfiles"
-edxapp_media_dir: "{{ edxapp_data_dir }}/media"
+edxapp_media_dir: "/media"
 edxapp_course_static_dir: "{{ edxapp_data_dir }}/course_static"
 edxapp_course_data_dir: "{{ edxapp_data_dir }}/data"
 edxapp_upload_dir: "{{ edxapp_data_dir }}/uploads"
@@ -831,7 +845,7 @@ generic_env_config:  &edxapp_generic_env
   BULK_EMAIL_EMAILS_PER_TASK: "{{ EDXAPP_BULK_EMAIL_EMAILS_PER_TASK }}"
   MICROSITE_ROOT_DIR: "{{ EDXAPP_MICROSITE_ROOT_DIR }}"
   MICROSITE_CONFIGURATION: "{{ EDXAPP_MICROSITE_CONFIGURATION }}"
-  DEFAULT_FILE_STORAGE:  "{{ EDXAPP_DEFAULT_FILE_STORAGE }}"
+  DEFAULT_FILE_STORAGE: "{{ EDXAPP_DEFAULT_FILE_STORAGE }}"
   GRADES_DOWNLOAD:
     STORAGE_CLASS: "{{ EDXAPP_GRADE_STORAGE_CLASS | default(None) }}"
     STORAGE_KWARGS: "{{ EDXAPP_GRADE_STORAGE_KWARGS | default(None) }}"
