@@ -9,7 +9,7 @@
    image: "{{ ami }}"  
    group: "{{ mongo_sg }}"
    region: "{{ instance_region }}"
-   wait: no
+   wait: yes
    vpc_subnet_id: "{{ subnet }}" 
    instance_tags:
          Name: "{{ tag_pmongo }}"
@@ -22,7 +22,7 @@
    image: "{{ ami }}"
    group: "{{ mongo_sg }}"
    region: "{{ instance_region }}"
-   wait: no 
+   wait: yes 
    vpc_subnet_id: "{{ subnet }}"
    instance_tags:
          Name: "{{ tag_smongo }}"
@@ -36,7 +36,7 @@
    image: "{{ ami }}"
    group: "{{ common_sg }}"
    region: "{{ instance_region }}"
-   wait: no
+   wait: yes
    vpc_subnet_id: "{{ subnet }}"
    instance_tags:
          Name: "{{ tag_rabbit }}"
@@ -50,7 +50,7 @@
    image: "{{ ami }}"    
    group: "{{ edxapp_sg }}"
    region: "{{ instance_region }}"
-   wait: no
+   wait: yes
    vpc_subnet_id: "{{ subnet }}"   
    count: "{{ app_count }}"
    instance_tags:
