@@ -43,9 +43,9 @@ EDXAPP_CMS_MAX_REQ: !!null
 EDXAPP_AWS_ACCESS_KEY_ID:  ""
 EDXAPP_AWS_SECRET_ACCESS_KEY:  ""
 EDXAPP_AWS_QUERYSTRING_AUTH: false
-EDXAPP_AWS_STORAGE_BUCKET_NAME: "unizin-openedx-unizin2"
-EDXAPP_IMPORT_EXPORT_BUCKET: "unizin-openedx-unizin2"
-EDXAPP_AWS_S3_CUSTOM_DOMAIN: "unizin-openedx-unizin2.s3.amazonaws.com"
+EDXAPP_AWS_STORAGE_BUCKET_NAME: "AwsS3StorageBucket"
+EDXAPP_IMPORT_EXPORT_BUCKET: "{{ EDXAPP_AWS_STORAGE_BUCKET_NAME }}"
+EDXAPP_AWS_S3_CUSTOM_DOMAIN: "{{ EDXAPP_AWS_STORAGE_BUCKET_NAME }}.s3.amazonaws.com"
 EDXAPP_SWIFT_USERNAME: "None"
 EDXAPP_SWIFT_KEY: "None"
 EDXAPP_SWIFT_TENANT_ID: "None"
@@ -252,9 +252,9 @@ EDXAPP_BOOK_URL: ""
 # This needs to be set to localhost
 # if xqueue is run on the same server
 # as the lms (it's sent in the request)
-EDXAPP_SITE_NAME: 'localhost'
+EDXAPP_SITE_NAME: "SiteName"
 EDXAPP_LMS_SITE_NAME: "{{ EDXAPP_SITE_NAME }}"
-EDXAPP_CMS_SITE_NAME: 'localhost'
+EDXAPP_CMS_SITE_NAME: "{{ EDXAPP_SITE_NAME }}"
 EDXAPP_MEDIA_URL:  "https://unizin-openedx-unizin2.s3.amazonaws.com/media"
 EDXAPP_ANALYTICS_SERVER_URL:  ""
 EDXAPP_FEEDBACK_SUBMISSION_EMAIL: ""

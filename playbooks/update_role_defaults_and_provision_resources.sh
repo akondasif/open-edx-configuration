@@ -1,5 +1,6 @@
 rds=openedx-rds-unizin2.cglg2lgriogm.us-east-1.rds.amazonaws.com
 domain=openedx-unizin2.testing.unizin.org
+s3storagebucket=unizin-openedx-unizin2
 app=172.31.2.238
 pmongo=172.31.1.254
 smongo=172.31.6.130
@@ -38,12 +39,12 @@ sed -n '32p' roles/forum/defaults/main.yml
 sed -n '14p' roles/certs/defaults/main.yml
 sed -n '46p' roles/notifier/defaults/main.yml
 sed -n '7p' roles/mongo_2_6/defaults/main.yml
+sed -n '46p' roles/edxapp/defaults/main.yml
 sed -n '66p' roles/edxapp/defaults/main.yml
 sed -n '90p' roles/edxapp/defaults/main.yml
 sed -n '97p' roles/edxapp/defaults/main.yml
 sed -n '119p' roles/edxapp/defaults/main.yml
 sed -n '255p' roles/edxapp/defaults/main.yml
-sed -n '257p' roles/edxapp/defaults/main.yml
 sed -n '265p' roles/edxapp/defaults/main.yml
 sed -n '58p' roles/xqueue/defaults/main.yml
 
@@ -59,12 +60,12 @@ sed -i "32s/localhost/$elastic/" roles/forum/defaults/main.yml
 sed -i "14s/localhost/$rabbit/" roles/certs/defaults/main.yml
 sed -i "46s/localhost/$smongo/" roles/notifier/defaults/main.yml
 sed -i "7s/localhost/$pmongo,$smongo/" roles/mongo_2_6/defaults/main.yml
+sed -i "46s/AwsS3StorageBucket/$s3storagebucket/" roles/edxapp/defaults/main.yml
 sed -i "66s/localhost/$pmongo,$smongo/" roles/edxapp/defaults/main.yml
 sed -i "90s/localhost/$rds/" roles/edxapp/defaults/main.yml
 sed -i "97s/localhost/$rabbit/" roles/edxapp/defaults/main.yml
 sed -i "119s/localhost/$smongo/" roles/edxapp/defaults/main.yml
-sed -i "255s/localhost/$domain/" roles/edxapp/defaults/main.yml
-sed -i "257s/localhost/$domain/" roles/edxapp/defaults/main.yml
+sed -i "255s/SiteName/$domain/" roles/edxapp/defaults/main.yml
 sed -i "265s/localhost/$rabbit/" roles/edxapp/defaults/main.yml
 sed -i "58s/localhost/$rds/" roles/xqueue/defaults/main.yml
 sed -i "s/unizin.com/example.com/" roles/edxapp/defaults/main.yml
