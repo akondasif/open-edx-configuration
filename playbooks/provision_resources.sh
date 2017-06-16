@@ -9,38 +9,38 @@
 
 private_key_path=/home/ubuntu/openedx-staging.pem
 
-VALID_TARGETS='(smongo|pmongo|rds|common|app|forums)'
+VALID_TARGETS='(mongo1|mongo2|rds|common|app|forums)'
 function show_usage {
   echo "Usage:"
   echo "provision_resource.sh $VALID_TARGETS"
   echo
 }
 
-if [ "$1" = "smongo" ]
+if [ "$1" = "mongo1" ]
 then
   # Install mongoDB on secondary node (configured without replication)
-  ansible-playbook -i "$smongo," run_role.yml -e role=mongo_2_6 -e MONGO_CLUSTERED=false -vvv --private-key=$private_key_path
-elif [ "$1" = "pmongo" ]
+  ansible-playbook -i "$MONGO1," run_role.yml -e role=mongo_2_6 -e MONGO_CLUSTERED=false -vvv --private-key=$private_key_path
+elif [ "$1" = "mongo2" ]
 then
   # Install mongoDB on primary node and initialize replicaset
-  ansible-playbook -i "$pmongo," run_role.yml -e role=mongo_2_6 -e MONGO_CLUSTERED=true -vvv --private-key=$private_key_path
+  ansible-playbook -i "$MONGO2," run_role.yml -e role=mongo_2_6 -e MONGO_CLUSTERED=true -vvv --private-key=$private_key_path
 elif [ "$1" = "rds" ]
 then
   # Create ll required users and databases in previously launched RDS
   ansible-playbook run_role.yml -e role=setup_rds
 elif [ "$1" = "common" ]
 then
-  scp -i ~/openedx-staging.pem /home/ubuntu/downloads/jdk-8u65-linux-x64.tar.gz "ubuntu@$rabbit:/var/tmp/"
+  scp -i ~/openedx-staging.pem /home/ubuntu/downloads/jdk-8u65-linux-x64.tar.gz "ubuntu@$RABBIT:/var/tmp/"
   # Install RabbitMQ, ElasticSearch, Xqueue
-  ansible-playbook -i "$rabbit," rabbit.yml -vvv --private-key=$private_key_path
+  ansible-playbook -i "$RABBIT," rabbit.yml -vvv --private-key=$private_key_path
 elif [ "$1" = "app" ]
 then
   # Run main ansible playbook for edX app deployment
-  ansible-playbook -i "$app," edx-stateless.yml -vvv --private-key=$private_key_path
+  ansible-playbook -i "$APP," edx-stateless.yml -vvv --private-key=$private_key_path
 elif [ "$1" = "forums" ]
 then
   # Deploy forums and forum site this playbook
-  ansible-playbook -i "$smongo," forum.yml -vvv --private-key=$private_key_path
+  ansible-playbook -i "$MONGO1," forum.yml -vvv --private-key=$private_key_path
 else
   echo
   echo "Invalid command line parameter '$1'"

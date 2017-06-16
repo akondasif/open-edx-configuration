@@ -1,14 +1,14 @@
-rds=openedx-rds-unizin2.cglg2lgriogm.us-east-1.rds.amazonaws.com
-domain=openedx-unizin2.testing.unizin.org
-s3storagebucket=unizin-openedx-unizin2
-app=172.31.2.238
-pmongo=172.31.1.254
-smongo=172.31.6.130
-elastic=172.31.0.70
-rabbit=172.31.0.70
+RDS=openedx-rds-unizin2.cglg2lgriogm.us-east-1.rds.amazonaws.com
+DOMAIN=openedx-unizin2.testing.unizin.org
+S3STORAGEBUCKET=unizin-openedx-unizin2
+APP=172.31.2.238
+MONGO1=172.31.1.254
+MONGO2=172.31.6.130
+ELASTIC=172.31.0.70
+RABBIT=172.31.0.70
 # We need to modify these values in files 
 
-# rds
+# RDS
 # roles/setup_rds/defaults/main.yml 
 # Line 6 edxRdsHost: 'localhost'
 
@@ -52,30 +52,30 @@ sed -n '58p' roles/xqueue/defaults/main.yml
 # This function  will update new IPs 
 # in all relevent places.
 function upd {
-sed -i "6s/localhost/$rds/"  roles/setup_rds/defaults/main.yml
-sed -i "18s/localhost/$pmongo/" roles/forum/defaults/main.yml
-sed -i "19s/localhost/$smongo/" roles/forum/defaults/main.yml
-sed -i "30s/localhost/$rabbit/" roles/forum/defaults/main.yml
-sed -i "32s/localhost/$elastic/" roles/forum/defaults/main.yml
-sed -i "14s/localhost/$rabbit/" roles/certs/defaults/main.yml
-sed -i "46s/localhost/$smongo/" roles/notifier/defaults/main.yml
-sed -i "7s/localhost/$pmongo,$smongo/" roles/mongo_2_6/defaults/main.yml
-sed -i "46s/AwsS3StorageBucket/$s3storagebucket/" roles/edxapp/defaults/main.yml
-sed -i "66s/localhost/$pmongo,$smongo/" roles/edxapp/defaults/main.yml
-sed -i "90s/localhost/$rds/" roles/edxapp/defaults/main.yml
-sed -i "97s/localhost/$rabbit/" roles/edxapp/defaults/main.yml
-sed -i "119s/localhost/$smongo/" roles/edxapp/defaults/main.yml
-sed -i "255s/SiteName/$domain/" roles/edxapp/defaults/main.yml
-sed -i "265s/localhost/$rabbit/" roles/edxapp/defaults/main.yml
-sed -i "58s/localhost/$rds/" roles/xqueue/defaults/main.yml
+sed -i "6s/localhost/$RDS/"  roles/setup_rds/defaults/main.yml
+sed -i "18s/localhost/$MONGO1/" roles/forum/defaults/main.yml
+sed -i "19s/localhost/$MONGO2/" roles/forum/defaults/main.yml
+sed -i "30s/localhost/$RABBIT/" roles/forum/defaults/main.yml
+sed -i "32s/localhost/$ELASTIC/" roles/forum/defaults/main.yml
+sed -i "14s/localhost/$RABBIT/" roles/certs/defaults/main.yml
+sed -i "46s/localhost/$MONGO2/" roles/notifier/defaults/main.yml
+sed -i "7s/localhost/$MONGO1,$MONGO2/" roles/mongo_2_6/defaults/main.yml
+sed -i "46s/AwsS3StorageBucket/$S3STORAGEBUCKET/" roles/edxapp/defaults/main.yml
+sed -i "66s/localhost/$MONGO1,$MONGO2/" roles/edxapp/defaults/main.yml
+sed -i "90s/localhost/$RDS/" roles/edxapp/defaults/main.yml
+sed -i "97s/localhost/$RABBIT/" roles/edxapp/defaults/main.yml
+sed -i "119s/localhost/$MONGO2/" roles/edxapp/defaults/main.yml
+sed -i "255s/SiteName/$DOMAIN/" roles/edxapp/defaults/main.yml
+sed -i "265s/localhost/$RABBIT/" roles/edxapp/defaults/main.yml
+sed -i "58s/localhost/$RDS/" roles/xqueue/defaults/main.yml
 sed -i "s/unizin.com/example.com/" roles/edxapp/defaults/main.yml
 
-echo "export rds=$rds" >> ~/.bashrc
-echo "export app=$app" >> ~/.bashrc
-echo "export pmongo=$pmongo" >> ~/.bashrc
-echo "export smongo=$smongo" >> ~/.bashrc
-echo "export elastic=$elastic" >> ~/.bashrc
-echo "export rabbit=$rabbit" >> ~/.bashrc
+echo "export RDS=$RDS" >> ~/.bashrc
+echo "export APP=$APP" >> ~/.bashrc
+echo "export MONGO1=$MONGO1" >> ~/.bashrc
+echo "export MONGO2=$MONGO2" >> ~/.bashrc
+echo "export ELASTIC=$ELASTIC" >> ~/.bashrc
+echo "export RABBIT=$RABBIT" >> ~/.bashrc
 source ~/.bashrc
 
 }
