@@ -83,13 +83,8 @@ source ~/.bashrc
 if [ "$1" = "update" ]
 then
   shw
-
-  read -p "Update IPs (y/n)?" choice
-  case "$choice" in 
-    y|Y ) echo "yes";upd;shw;; 
-    n|N ) echo "no";;
-    * ) echo "invalid";;
-  esac
+  upd
+  shw
 else
   ./provision_resources.sh $1
 fi
