@@ -1,0 +1,9 @@
+
+# Security Group paraneters for Indiana Open edX instance
+
+sg_prefix: "Open-edX-Indiana-Security"
+edxapp_sg: "{{ sg_prefix }}-AppSG-2J9UILTAWTCG"
+mongo_sg: "{{ sg_prefix }}-MongoSG-1702LN1YOB0YU"
+common_sg: "{{ sg_prefix }}-CommonSG-WNO72QLDXRG4"
+
+rds_vpc_sg: sg-2bb7bc55
