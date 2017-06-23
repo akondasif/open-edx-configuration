@@ -6,4 +6,4 @@ edxapp_sg: "{{ sg_prefix }}-AppSG-CTG8PKB1VZF1"
 mongo_sg: "{{ sg_prefix }}-MongoSG-34V0MYUM14H1"
 common_sg: "{{ sg_prefix }}-CommonSG-D2U9CADY20LH"
 
-rds_vpc_sg: sg-da8ab6a4
+rds_vpc_sg: sg-e195a99f
