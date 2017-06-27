@@ -1,11 +1,12 @@
-RDS=openedx-rds-unizin2.cglg2lgriogm.us-east-1.rds.amazonaws.com
+RDS=openedx-rds-unizin.cglg2lgriogm.us-east-1.rds.amazonaws.com
 DOMAIN=openedx-unizin2.testing.unizin.org
-S3STORAGEBUCKET=unizin-openedx-unizin2
-APP=172.31.2.238
-MONGO1=172.31.1.254
-MONGO2=172.31.6.130
-ELASTIC=172.31.0.70
-RABBIT=172.31.0.70
+PREVIEWURL=openedx-preview-unizin2.testing.unizin.org
+S3STORAGEBUCKET=unizin-openedx-unizin
+APP=172.31.9.16
+MONGO1=172.31.10.161
+MONGO2=172.31.0.152
+ELASTIC=172.31.6.222
+RABBIT=172.31.6.222
 # We need to modify these values in files 
 
 # RDS
@@ -39,6 +40,7 @@ sed -n '32p' roles/forum/defaults/main.yml
 sed -n '14p' roles/certs/defaults/main.yml
 sed -n '46p' roles/notifier/defaults/main.yml
 sed -n '7p' roles/mongo_2_6/defaults/main.yml
+sed -n '27p' roles/edxapp/defaults/main.yml
 sed -n '46p' roles/edxapp/defaults/main.yml
 sed -n '66p' roles/edxapp/defaults/main.yml
 sed -n '90p' roles/edxapp/defaults/main.yml
@@ -60,6 +62,7 @@ sed -i "32s/localhost/$ELASTIC/" roles/forum/defaults/main.yml
 sed -i "14s/localhost/$RABBIT/" roles/certs/defaults/main.yml
 sed -i "46s/localhost/$MONGO2/" roles/notifier/defaults/main.yml
 sed -i "7s/localhost/$MONGO1,$MONGO2/" roles/mongo_2_6/defaults/main.yml
+sed -i "27s/PreviewURL/$PREVIEWURL/" roles/edxapp/defaults/main.yml
 sed -i "46s/AwsS3StorageBucket/$S3STORAGEBUCKET/" roles/edxapp/defaults/main.yml
 sed -i "66s/localhost/$MONGO1,$MONGO2/" roles/edxapp/defaults/main.yml
 sed -i "90s/localhost/$RDS/" roles/edxapp/defaults/main.yml
@@ -84,6 +87,9 @@ if [ "$1" = "update" ]
 then
   shw
   upd
+  echo
+  echo "Updated settings:"
+  echo
   shw
 else
   ./provision_resources.sh $1
