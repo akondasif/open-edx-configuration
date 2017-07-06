@@ -3,7 +3,7 @@
 # Defaults for role newrelic-infra-unizin
 #
 
-NEWRELIC_DEBIAN_REPO: "deb [arch=amd64] https://download.newrelic.com/infrastructure_agent/linux/apt {{ nrinfragent_os_codename }} main"
+NEWRELIC_DEBIAN_REPO: "deb [arch=amd64] https://download.newrelic.com/infrastructure_agent/linux/apt {{ ansible_lsb.codename }} main"
 NEWRELIC_DEBIAN_KEY_ID: '548C16BF'
 NEWRELIC_DEBIAN_KEY_URL: 'https://download.newrelic.com/infrastructure_agent/gpg/newrelic-infra.gpg'
 

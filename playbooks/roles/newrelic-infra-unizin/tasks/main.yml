@@ -39,8 +39,6 @@
   template:
     src: newrelic-infra.yml.j2
     dest: "{{ NEWRELIC_CONFIG_PATH }}"
-    owner: "newrelic"
-    group: "newrelic"
     mode: 0600
 
 - name: insert display_name into New Relic configuration file
