@@ -1,7 +1,7 @@
 
 # Security Group paraneters for Michigan Open edX instance
 
-sg_prefix: "Open-edX-Unizin-Security"
+sg_prefix: "Open-edX-Michigan-Security"
 edxapp_sg: "{{ sg_prefix }}-AppSG-1EMWALD8F7RX2"
 mongo_sg: "{{ sg_prefix }}-MongoSG-Y4H5UD662D25"
 common_sg: "{{ sg_prefix }}-CommonSG-OBXTYSWM1W0F"
