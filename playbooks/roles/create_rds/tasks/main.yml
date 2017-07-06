@@ -1,7 +1,7 @@
 ---
 # Tasks for role create_rds
 #
-- name: Launch RDS Instance
+- name: launch RDS Instance
   rds:
      command: create
      instance_name: "{{ rds_instance_name }}"

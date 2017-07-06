@@ -13,5 +13,8 @@
     - [ "params/{{ university_short_name }}.yml", "params/unizin.yml" ]
   roles: 
     - create_rds
-    - create_instances
+    - { role: create_instance, instance: t2.small,  vol_size: 8,  instance_name: "openedx-{{ name }}-mongo-1", sg: "{{ mongo_sg }}", description: "MongoDB PRIMARY"}
+    - { role: create_instance, instance: t2.small,  vol_size: 8,  instance_name: "openedx-{{ name }}-mongo-2", sg: "{{ mongo_sg }}", description: "MongoDB SECONDARY"}
+    - { role: create_instance, instance: t2.large,  vol_size: 8,  instance_name: "openedx-{{ name }}-common",  sg: "{{ common_sg }}", description: "Common server"}
+    - { role: create_instance, instance: t2.medium, vol_size: 16, instance_name: "openedx-{{ name }}-app",     sg: "{{ edxapp_sg }}", description: "EdX app server"}
 ...

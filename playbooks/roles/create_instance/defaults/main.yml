@@ -1,0 +1,10 @@
+---
+#
+# Defaults variable values for create_instance role
+# 
+ami: ami-52ab9144
+pem_file: openedx-staging
+instance_region: us-east-1
+subnet: subnet-99fa96ee
+project_tag: "openedx"
+...
