@@ -1,0 +1,14 @@
+# Installs and configures New Relic Infrastructue on ec2 instances
+# Usage:
+#   ansible-playbook setup_newrelic_infra.yml -vvvv --private-key=<key-file path>
+---
+
+- name: install and configure New Relic Infrastructure
+  hosts: all
+  become: yes
+  vars:
+     software_key_prefix: openedx-umich2.testing.unizin.org
+     environment_name: test
+  roles: 
+    - newrelic-infra-unizin
+...

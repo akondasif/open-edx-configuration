@@ -2,7 +2,7 @@
 # For details and to modify go to defaults/main.yml 
 # for the relevant role.
 # Usage:
-#   ansible-playbook ./create_resources.yml -e university_short_name=...
+#   ansible-playbook -vvvv create_resources.yml -e university_short_name=...
 ---
 - name: deploy edx infrastructure
   hosts: all

@@ -16,7 +16,11 @@ function show_usage {
   echo
 }
 
-if [ "$1" = "mongo1" ]
+if [ "$1" = "newrelic" ]
+then
+  # Install and configure New Relic Infrastructure
+  ansible-playbook setup_newrelic_infra.yml -i "$MONGO1,$MONGO2,$RABBIT,$APP" -vvvv --private-key=$private_key_path
+elif [ "$1" = "mongo1" ]
 then
   # Install mongoDB on secondary node (configured without replication)
   ansible-playbook -i "$MONGO1," run_role.yml -e role=mongo_2_6 -e MONGO_CLUSTERED=false -vvv --private-key=$private_key_path
