@@ -24,7 +24,7 @@ EDXAPP_DJFS:
   url_root : '/static/django-pyfs'
 
 EDXAPP_LMS_BASE: "{{ EDXAPP_LMS_SITE_NAME }}:{{ EDXAPP_LMS_NGINX_PORT }}"
-EDXAPP_PREVIEW_LMS_BASE: "PreviewURL"
+EDXAPP_PREVIEW_LMS_BASE: "{{ lookup('env','PREVIEWURL') }}"
 EDXAPP_CMS_BASE: "{{ EDXAPP_CMS_SITE_NAME }}:{{ EDXAPP_CMS_SSL_NGINX_PORT }}"
 
 EDXAPP_LMS_GUNICORN_EXTRA: ""
@@ -43,7 +43,7 @@ EDXAPP_CMS_MAX_REQ: !!null
 EDXAPP_AWS_ACCESS_KEY_ID: "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
 EDXAPP_AWS_SECRET_ACCESS_KEY: "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
 EDXAPP_AWS_QUERYSTRING_AUTH: false
-EDXAPP_AWS_STORAGE_BUCKET_NAME: "AwsS3StorageBucket"
+EDXAPP_AWS_STORAGE_BUCKET_NAME: "{{ lookup('env','S3STORAGEBUCKET') }}"
 EDXAPP_IMPORT_EXPORT_BUCKET: "{{ EDXAPP_AWS_STORAGE_BUCKET_NAME }}"
 EDXAPP_AWS_S3_CUSTOM_DOMAIN: "{{ EDXAPP_AWS_STORAGE_BUCKET_NAME }}.s3.amazonaws.com"
 EDXAPP_SWIFT_USERNAME: "None"
@@ -63,7 +63,7 @@ EDXAPP_XQUEUE_DJANGO_AUTH:
   password: 'password'
 EDXAPP_XQUEUE_URL: "http://localhost:18040"
 
-EDXAPP_MONGO_HOSTS: ["localhost"]
+EDXAPP_MONGO_HOSTS: ["mongo1,mongo2"]
 EDXAPP_MONGO_PASSWORD: 'password'
 EDXAPP_MONGO_PORT: 27017
 EDXAPP_MONGO_USER: 'edxapp'
@@ -87,14 +87,14 @@ EDXAPP_MYSQL_CSMH_PASSWORD: "{{ EDXAPP_MYSQL_PASSWORD }}"
 EDXAPP_MYSQL_CSMH_HOST: "{{ EDXAPP_MYSQL_HOST }}"
 EDXAPP_MYSQL_CSMH_PORT: "{{ EDXAPP_MYSQL_PORT }}"
 
-EDXAPP_MYSQL_HOST: "localhost"
+EDXAPP_MYSQL_HOST: "{{ lookup('env','RDS') }}"
 EDXAPP_MYSQL_PORT: '3306'
 
 # list of dictionaries of the format
 # { 'host': 'hostname', 'port': 'portnumber', 'otherconfigsuchas use_ssl': 'True' }
 # http://elasticsearch-py.readthedocs.org/en/master/api.html#elasticsearch
 EDXAPP_ELASTIC_SEARCH_CONFIG:
-    - host: "localhost"
+    - host: "elastic"
       port: 9200
 
 EDXAPP_SETTINGS: '{{ COMMON_EDXAPP_SETTINGS }}'
@@ -116,7 +116,7 @@ EDXAPP_LOG_LEVEL: 'INFO'
 
 EDXAPP_MEMCACHE: [ "localhost:11211" ]
 EDXAPP_CACHE_COURSE_STRUCTURE_MEMCACHE: "{{ EDXAPP_MEMCACHE }}"
-EDXAPP_COMMENTS_SERVICE_URL:  "http://localhost:18080"
+EDXAPP_COMMENTS_SERVICE_URL:  "http://mongo2:18080"
 # EDXAPP_COMMENTS_SERVICE_KEY must match FORUM_API_KEY
 EDXAPP_COMMENTS_SERVICE_KEY:  'password'
 
@@ -252,7 +252,7 @@ EDXAPP_BOOK_URL: ""
 # This needs to be set to localhost
 # if xqueue is run on the same server
 # as the lms (it's sent in the request)
-EDXAPP_SITE_NAME: "SiteName"
+EDXAPP_SITE_NAME: "{{ lookup('env','DOMAIN') }}"
 EDXAPP_LMS_SITE_NAME: "{{ EDXAPP_SITE_NAME }}"
 EDXAPP_CMS_SITE_NAME: "{{ EDXAPP_SITE_NAME }}"
 EDXAPP_MEDIA_URL:  "https://unizin-openedx-unizin2.s3.amazonaws.com/media"
@@ -262,7 +262,7 @@ EDXAPP_CELERY_BROKER_HOSTNAME: ""
 EDXAPP_LOGGING_ENV:  'sandbox'
 
 EDXAPP_SYSLOG_SERVER: ""
-EDXAPP_RABBIT_HOSTNAME: "localhost"
+EDXAPP_RABBIT_HOSTNAME: "rabbit"
 
 EDXAPP_LMS_NGINX_PORT: 18000
 EDXAPP_LMS_SSL_NGINX_PORT: 443

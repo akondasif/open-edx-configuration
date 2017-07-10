@@ -4,7 +4,7 @@ mongo_port: "27017"
 mongo_extra_conf: ''
 mongo_key_file: '/etc/mongodb_key'
 mongo_repl_set: rs0
-mongo_cluster_members: [localhost]
+mongo_cluster_members: [mongo1,mongo2]
 pymongo_version: 2.7.2
 
 mongo_data_dir: "{{ COMMON_DATA_DIR }}/mongo"

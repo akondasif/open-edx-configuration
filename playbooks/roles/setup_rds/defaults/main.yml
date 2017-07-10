@@ -3,7 +3,7 @@
 rdsUser: 'root'
 rdsPass: 'password'
 
-edxRdsHost: 'localhost'
+edxRdsHost: "{{ lookup('env','RDS') }}"
 
 COMMON_MYSQL_MIGRATE_USER: 'migrate'
 COMMON_MYSQL_MIGRATE_PASS: 'password'

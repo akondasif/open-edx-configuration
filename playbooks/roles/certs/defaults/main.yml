@@ -11,7 +11,7 @@
 # Defaults for role certs
 #
 
-CERTS_QUEUE_URL: "http://localhost:18040"
+CERTS_QUEUE_URL: "http://rabbit:18040"
 CERTS_BUCKET: ""
 # basic auth credentials for connecting
 # to the xqueue server

@@ -15,8 +15,8 @@ forum_path: "{{ forum_binstubs_dir }}:{{ forum_rbenv_bin }}:{{ forum_rbenv_shims
 FORUM_MONGO_USER: "cs_comments_service"
 FORUM_MONGO_PASSWORD: "password"
 FORUM_MONGO_HOSTS:
-  - "localhost"
-  - "localhost"
+  - "mongo1"
+  - "mongo2"
 FORUM_MONGO_TAGS: !!null
 FORUM_MONGO_PORT: "27017"
 FORUM_MONGO_DATABASE: "cs_comments_service"
@@ -29,7 +29,7 @@ FORUM_RACK_ENV: "production"
 FORUM_NGINX_PORT: "18080"
 # FORUM_API_KEY must match EDXAPP_COMMENTS_SERVICE_KEY
 FORUM_API_KEY: "password"
-FORUM_ELASTICSEARCH_HOST: "localhost"
+FORUM_ELASTICSEARCH_HOST: "elastic"
 FORUM_ELASTICSEARCH_PORT: "9200"
 FORUM_ELASTICSEARCH_URL: "http://{{ FORUM_ELASTICSEARCH_HOST }}:{{ FORUM_ELASTICSEARCH_PORT }}"
 
