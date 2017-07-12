@@ -2,31 +2,17 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: Open edX SG stack
 
 Parameters:
-  UniversityShortName:
-    Description: Identifies member university
-    Type: String
   VPC:
     Description: VPC to use
     Type: "AWS::EC2::VPC::Id"
+  UniversityShortName:
+    Description: Identifies member university
+    Type: String
+  BuildServerSecurityGroupId:
+    Description: build server's security group id
+    Type: String
 
 Resources:
-  BuildSG:
-    Type: "AWS::EC2::SecurityGroup"
-    Properties:
-      GroupDescription: !Sub Open edX - ${UniversityShortName}, SG for build server
-      VpcId: !Ref VPC
-      Tags:
-        - Key: Name
-          Value: !Sub openedx-${UniversityShortName}-build
-  BuildSshIngress:
-    Type: "AWS::EC2::SecurityGroupIngress"
-    Properties:
-      GroupId: !Ref BuildSG
-      IpProtocol: tcp
-      FromPort: "22"
-      ToPort: "22"
-      CidrIp: 0.0.0.0/0
-
   ElbSG:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
@@ -75,8 +61,7 @@ Resources:
       IpProtocol: tcp
       FromPort: "22"
       ToPort: "22"
-      SourceSecurityGroupId: !Ref BuildSG
-    DependsOn: BuildSG
+      SourceSecurityGroupId: !Sub ${BuildServerSecurityGroupId}
   AppHttpIngress:
     Type: "AWS::EC2::SecurityGroupIngress"
     Properties:
@@ -129,8 +114,7 @@ Resources:
       IpProtocol: tcp
       FromPort: "22"
       ToPort: "22"
-      SourceSecurityGroupId: !Ref BuildSG
-    DependsOn: BuildSG
+      SourceSecurityGroupId: !Sub ${BuildServerSecurityGroupId}
   MongoIngressFromApp:
     Type: "AWS::EC2::SecurityGroupIngress"
     Properties:
@@ -183,8 +167,7 @@ Resources:
       IpProtocol: tcp
       FromPort: "22"
       ToPort: "22"
-      SourceSecurityGroupId: !Ref BuildSG
-    DependsOn: BuildSG
+      SourceSecurityGroupId: !Sub ${BuildServerSecurityGroupId}
   CommonElasticIngressFromApp:
     Type: "AWS::EC2::SecurityGroupIngress"
     Properties:
@@ -237,8 +220,7 @@ Resources:
       IpProtocol: tcp
       FromPort: "3306"
       ToPort: "3306"
-      SourceSecurityGroupId: !Ref BuildSG
-    DependsOn: BuildSG
+      SourceSecurityGroupId: !Sub ${BuildServerSecurityGroupId}
   RdsIngressFromApp:
     Type: "AWS::EC2::SecurityGroupIngress"
     Properties:
@@ -258,3 +240,14 @@ Resources:
       SourceSecurityGroupId: !Ref CommonSG
     DependsOn: CommonSG
 
+Outputs:
+  RdsSecurityGroup:
+    Value: !Ref RdsSG
+  MongoServerSecurityGroup:
+    Value: !Ref MongoSG
+  CommonServerSecurityGroup:
+    Value: !Ref CommonSG
+  AppServerSecurityGroup:
+    Value: !Ref AppSG
+  ElbSecurityGroup:
+    Value: !Ref ElbSG

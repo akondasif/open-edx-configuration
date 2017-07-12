@@ -1,0 +1,139 @@
+# Create Open edX data stack
+#
+# Usage:
+#   ansible-playbook -vvvv create_data_stack.yml -e full_name=... -e short_name=... -e build_sg=...
+---
+- hosts: localhost
+  tasks:
+    - name: create Open edX Security stack
+      cloudformation:
+        stack_name: "Open-edX-{{ full_name }}-Security"
+        region: "us-east-1"
+        state: "present"
+        template: "cfn/security-stack.template"
+        template_parameters:
+          VPC: "vpc-2ec89b4b"
+          UniversityShortName: "{{ short_name }}"
+          BuildServerSecurityGroupId: "{{ build_sg }}"
+        tags:
+          Stack: "Open-edX-{{ full_name }}-Security"
+          Project: "openedx"
+      register: "security_stack"
+
+    - name: create MySQL RDS
+      cloudformation:
+        stack_name: "Open-edX-{{ full_name }}-RDS"
+        region: "us-east-1"
+        state: "present"
+        template: "cfn/rds-stack.template"
+        template_parameters:
+          UniversityShortName: "{{ short_name }}"
+          DBUser: "root"
+          DBPassword: "password"
+          RdsAllocatedStorage: 5
+          RdsSecurityGroupId: "{{ security_stack.stack_outputs.RdsSecurityGroup }}"
+        tags:
+          Stack: "Open-edX-{{ full_name }}-RDS"
+          Project: "openedx"
+      register: "rds_stack"
+
+    - name: create Open edX data servers
+      cloudformation:
+        stack_name: "Open-edX-{{ full_name }}-DataServers"
+        region: "us-east-1"
+        state: "present"
+        template: "cfn/data-server-stack.template"
+        template_parameters:
+          VPC: "vpc-2ec89b4b"
+          UniversityShortName: "{{ short_name }}"
+          MongoSecurityGroupId: "{{ security_stack.stack_outputs.MongoServerSecurityGroup }}"
+          CommonSecurityGroupId: "{{ security_stack.stack_outputs.CommonServerSecurityGroup }}"
+          BaseAMI: "ami-fb3232ed"
+        tags:
+          Stack: "Open-edX-{{ full_name }}-DataServers"
+          Project: "openedx"
+      register: "data_server_stack"
+
+
+    - name: set variables for server ips
+      set_fact:
+        mongo1: "{{ data_server_stack.stack_outputs.MongoPrimaryIp }}"
+        mongo2: "{{ data_server_stack.stack_outputs.MongoSecondaryIp }}"
+        common: "{{ data_server_stack.stack_outputs.CommonServerIp }}"
+        env_file: "/tmp/ansible.env"
+
+    - name: delete file if it already exists
+      file:
+        dest: "{{ env_file }}"
+        state: absent
+
+    - name: write environment variables to file
+      file:
+        dest: "{{ env_file }}"
+        state: touch
+
+    - lineinfile:
+        dest: "{{ env_file }}"
+        line: "export MONGO1={{ mongo1 }}"
+        insertafter: EOF
+
+    - lineinfile:
+        dest: "{{ env_file }}"
+        line: "export MONGO2={{ mongo2 }}"
+        insertafter: EOF
+
+    - lineinfile:
+        dest: "{{ env_file }}"
+        line: "export COMMON={{ common }}"
+        insertafter: EOF
+
+    - lineinfile:
+        dest: "{{ env_file }}"
+        line: "export ELASTIC={{ common }}"
+        insertafter: EOF
+
+    - lineinfile:
+        dest: "{{ env_file }}"
+        line: "export RABBIT={{ common }}"
+        insertafter: EOF
+
+    - lineinfile:
+        dest: "{{ env_file }}"
+        line: "export RDS={{ rds_stack.stack_outputs.RdsEndpointAddress }}"
+        insertafter: EOF
+
+    - name: delete file if it already exists
+      file:
+        dest: /tmp/hosts
+        state: absent
+
+    - name: create file
+      file:
+        dest: /tmp/hosts
+        state: touch
+
+    - lineinfile:
+        dest: /tmp/hosts
+        line: "{{ mongo1 }} mongo1"
+        insertafter: EOF
+
+    - lineinfile:
+        dest: /tmp/hosts
+        line: "{{ mongo2 }} mongo2"
+        insertafter: EOF
+
+    - lineinfile:
+        dest: /tmp/hosts
+        line: "{{ common }} elastic rabbit"
+        insertafter: EOF
+
+
+- hosts: localhost
+  vars:
+    environment_variables:
+      MONGO1: "{{  mongo1 }}"
+      MONGO2: "{{  mongo2 }}"
+      COMMON: "{{  common }}"
+      ELASTIC: "{{  common }}"
+      RABBIT: "{{  common }}"
+...

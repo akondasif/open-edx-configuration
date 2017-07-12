@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Open edX Build Server
+
+Parameters:
+  ProjectTag:
+    Description: For tracking AWS expenses by project (constant)
+    Default: openedx
+    Type: String
+  VPC:
+    Description: VPC to use
+    Type: "AWS::EC2::VPC::Id"
+  BaseAMI:
+    Description: ID of build server base AMI
+    Type: String
+  UniversityShortName:
+    Description: Identifies member university
+    Type: String
+
+Resources:
+  BuildSG:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: !Sub Open edX - ${UniversityShortName}, SG for Build Server
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub openedx-${UniversityShortName}-build
+        - Key: Project
+          Value: !Sub ${ProjectTag}
+  BuildSshIngress:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref BuildSG
+      IpProtocol: tcp
+      FromPort: "22"
+      ToPort: "22"
+      CidrIp: 0.0.0.0/0
+  BuildServer: 
+    Type: "AWS::EC2::Instance"
+    Properties: 
+      InstanceType: "t2.micro"
+      ImageId: !Sub "${BaseAMI}"
+      KeyName: "openedx-staging"
+      SecurityGroupIds: 
+        - !Ref BuildSG
+      Tags:
+        - Key: Name
+          Value: !Sub openedx-${UniversityShortName}-build
+        - Key: Project
+          Value: !Sub ${ProjectTag}
+
+Outputs:
+  BuildServerSecurityGroup:
+    Value: !Ref BuildSG
+  BuildServerIp:
+    Value: !GetAtt BuildServer.PrivateIp
