@@ -60,47 +60,51 @@
         mongo1: "{{ data_server_stack.stack_outputs.MongoPrimaryIp }}"
         mongo2: "{{ data_server_stack.stack_outputs.MongoSecondaryIp }}"
         common: "{{ data_server_stack.stack_outputs.CommonServerIp }}"
-        env_file: "/tmp/ansible.env"
+        env_source: "/tmp/env.sh"
+        env_yml: "/tmp/env.yml"
 
     - name: delete file if it already exists
       file:
-        dest: "{{ env_file }}"
+        dest: "{{ env_source }}"
         state: absent
 
-    - name: write environment variables to file
+    - name: delete file if it already exists
       file:
-        dest: "{{ env_file }}"
+        dest: "{{ env_yml }}"
+        state: absent
+
+    - name: create file
+      file:
+        dest: "{{ env_source }}"
         state: touch
 
-    - lineinfile:
-        dest: "{{ env_file }}"
-        line: "export MONGO1={{ mongo1 }}"
+    - name: create file
+      file:
+        dest: "{{ env_yml }}"
+        state: touch
+
+    - blockinfile:
+        dest: "{{ env_source }}"
+        block:  |
+          export MONGO1={{ mongo1 }}
+          export MONGO2={{ mongo2 }}
+          export COMMON={{ common }}
+          export ELASTIC={{ common }}
+          export RABBIT={{ common }}
+          export RDS={{ rds_stack.stack_outputs.RdsEndpointAddress }}
         insertafter: EOF
 
-    - lineinfile:
-        dest: "{{ env_file }}"
-        line: "export MONGO2={{ mongo2 }}"
+    - blockinfile:
+        dest: "{{ env_yml }}"
+        block: |
+          MONGO1: {{ common }}
+          MONGO2: {{ common }}
+          COMMON: {{ common }}
+          ELASTIC: {{ common }}
+          RABBIT: {{ common }}
+          RDS: {{ rds_stack.stack_outputs.RdsEndpointAddress }}
         insertafter: EOF
 
-    - lineinfile:
-        dest: "{{ env_file }}"
-        line: "export COMMON={{ common }}"
-        insertafter: EOF
-
-    - lineinfile:
-        dest: "{{ env_file }}"
-        line: "export ELASTIC={{ common }}"
-        insertafter: EOF
-
-    - lineinfile:
-        dest: "{{ env_file }}"
-        line: "export RABBIT={{ common }}"
-        insertafter: EOF
-
-    - lineinfile:
-        dest: "{{ env_file }}"
-        line: "export RDS={{ rds_stack.stack_outputs.RdsEndpointAddress }}"
-        insertafter: EOF
 
     - name: delete file if it already exists
       file:
@@ -112,28 +116,33 @@
         dest: /tmp/hosts
         state: touch
 
-    - lineinfile:
+    - blockinfile:
         dest: /tmp/hosts
-        line: "{{ mongo1 }} mongo1"
+        block: |
+          {{ mongo1 }} mongo1
+          {{ mongo2 }} mongo2
+          {{ common }} elastic rabbit
         insertafter: EOF
 
-    - lineinfile:
-        dest: /tmp/hosts
-        line: "{{ mongo2 }} mongo2"
-        insertafter: EOF
+    - add_host:
+        name: "{{ mongo1 }}"
+        groups: other
 
-    - lineinfile:
-        dest: /tmp/hosts
-        line: "{{ common }} elastic rabbit"
-        insertafter: EOF
+    - add_host:
+        name: "{{ mongo2 }}"
+        groups: other
+
+    - add_host:
+        name: "{{ common }}"
+        groups: other
 
 
-- hosts: localhost
+- hosts: other
   vars:
-    environment_variables:
-      MONGO1: "{{  mongo1 }}"
-      MONGO2: "{{  mongo2 }}"
-      COMMON: "{{  common }}"
-      ELASTIC: "{{  common }}"
-      RABBIT: "{{  common }}"
+    ansible_ssh_private_key_file: "/home/ubuntu/openedx-staging.pem"
+  tasks:
+    - name: copy file
+      copy:
+        src: /tmp/env.sh
+        dest: /tmp/env.sh
 ...
