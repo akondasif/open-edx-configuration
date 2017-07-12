@@ -126,23 +126,24 @@
 
     - add_host:
         name: "{{ mongo1 }}"
-        groups: other
+        groups: nonlocal
 
     - add_host:
         name: "{{ mongo2 }}"
-        groups: other
+        groups: nonlocal
 
     - add_host:
         name: "{{ common }}"
-        groups: other
+        groups: nonlocal
 
 
-- hosts: other
+- hosts: nonlocal
   vars:
     ansible_ssh_private_key_file: "/home/ubuntu/openedx-staging.pem"
+    filepath: "{{ hostvars['localhost']['env_source'] }}"
   tasks:
     - name: copy file
       copy:
-        src: /tmp/env.sh
-        dest: /tmp/env.sh
+        src: "{{ filepath }}"
+        dest: "{{ filepath }}"
 ...
