@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Open edX Data Servers
+
+Parameters:
+  ProjectTag:
+    Description: For tracking AWS expenses by project (constant)
+    Default: openedx
+    Type: String
+  VPC:
+    Description: VPC to use
+    Type: "AWS::EC2::VPC::Id"
+  BaseAMI:
+    Description: ID of Open edX server base AMI
+    Type: String
+  UniversityShortName:
+    Description: Member University short identifier
+    Type: String
+  AppSecurityGroupId:
+    Description: app server's security group id
+    Type: String
+
+Resources:
+  EdxAppInstance: 
+    Type: "AWS::EC2::Instance"
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          commands:
+            newrelic:
+              command: "ansible-playbook -vvvv /var/tmp/unizin-open-edx/configuration/playbooks/setup_newrelic_infra.yml | tee /tmp/newrelic.out"
+              env:
+                NEWRELIC_LICENSE_KEY: "9de377b20faec94d4116a5bd10bb42ac8eba571d"
+    Properties: 
+      InstanceType: "t2.medium"
+      ImageId: !Sub "${BaseAMI}"
+      KeyName: "openedx-staging"
+      BlockDeviceMappings:
+        - DeviceName: "/dev/sda1"
+          Ebs:
+            VolumeType: "gp2"
+            VolumeSize: "16"
+      SecurityGroupIds: 
+        - !Sub ${AppSecurityGroupId}
+      Tags:
+        - Key: Name
+          Value: !Sub openedx-${UniversityShortName}-app
+        - Key: Project
+          Value: !Sub ${ProjectTag}
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash -xe
+            pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
+            cp /usr/local/init/ubuntu/cfn-hup /etc/init.d/cfn-hup
+            chmod +x /etc/init.d/cfn-hup
+            update-rc.d cfn-hup defaults
+            service cfn-hup start
+            /usr/local/bin/cfn-init -v --stack ${AWS::StackName} --resource EdxAppInstance --region ${AWS::Region}
+            /usr/local/bin/cfn-signal --success true --stack ${AWS::StackName} --resource EdxAppInstance --region ${AWS::Region}
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT10M
+
+Outputs:
+  EdxAppIp:
+    Value: !GetAtt EdxAppInstance.PrivateIp

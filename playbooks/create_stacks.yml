@@ -42,7 +42,7 @@
         stack_name: "Open-edX-{{ full_name }}-DataServers"
         region: "us-east-1"
         state: "present"
-        template: "cfn/data-server-stack.template"
+        template: "cfn/data-stack.template"
         template_parameters:
           VPC: "vpc-2ec89b4b"
           UniversityShortName: "{{ short_name }}"
@@ -52,14 +52,31 @@
         tags:
           Stack: "Open-edX-{{ full_name }}-DataServers"
           Project: "openedx"
-      register: "data_server_stack"
+      register: "data_stack"
+
+    - name: create Open edX app server
+      cloudformation:
+        stack_name: "Open-edX-{{ full_name }}-AppServers"
+        region: "us-east-1"
+        state: "present"
+        template: "cfn/app-stack.template"
+        template_parameters:
+          VPC: "vpc-2ec89b4b"
+          UniversityShortName: "{{ short_name }}"
+          AppSecurityGroupId: "{{ security_stack.stack_outputs.AppServerSecurityGroup }}"
+          BaseAMI: "ami-fb3232ed"
+        tags:
+          Stack: "Open-edX-{{ full_name }}-AppServers"
+          Project: "openedx"
+      register: "app_stack"
 
 
     - name: set variables for server ips
       set_fact:
-        mongo1: "{{ data_server_stack.stack_outputs.MongoPrimaryIp }}"
-        mongo2: "{{ data_server_stack.stack_outputs.MongoSecondaryIp }}"
-        common: "{{ data_server_stack.stack_outputs.CommonServerIp }}"
+        edxapp: "{{ app_stack.stack_outputs.EdxAppIp }}"
+        mongo1: "{{ data_stack.stack_outputs.MongoPrimaryIp }}"
+        mongo2: "{{ data_stack.stack_outputs.MongoSecondaryIp }}"
+        common: "{{ data_stack.stack_outputs.CommonServerIp }}"
         env_source: "/tmp/env.sh"
         env_yml: "/tmp/env.yml"
 
@@ -86,6 +103,7 @@
     - blockinfile:
         dest: "{{ env_source }}"
         block:  |
+          export APP={{ edxapp }}
           export MONGO1={{ mongo1 }}
           export MONGO2={{ mongo2 }}
           export COMMON={{ common }}
@@ -97,8 +115,9 @@
     - blockinfile:
         dest: "{{ env_yml }}"
         block: |
-          MONGO1: {{ common }}
-          MONGO2: {{ common }}
+          APP: {{ edxapp }}
+          MONGO1: {{ mongo1 }}
+          MONGO2: {{ mongo2 }}
           COMMON: {{ common }}
           ELASTIC: {{ common }}
           RABBIT: {{ common }}
@@ -125,6 +144,9 @@
         insertafter: EOF
 
     - add_host:
+        name: "{{ edxapp }}"
+        groups: nonlocal
+
         name: "{{ mongo1 }}"
         groups: nonlocal
 

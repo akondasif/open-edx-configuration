@@ -13,7 +13,7 @@ Parameters:
     Description: ID of Open edX server base AMI
     Type: String
   UniversityShortName:
-    Description: Identifies member university
+    Description: Member University short identifier
     Type: String
   MongoSecurityGroupId:
     Description: build server's security group id
@@ -53,7 +53,7 @@ Resources:
             chmod +x /etc/init.d/cfn-hup
             update-rc.d cfn-hup defaults
             service cfn-hup start
-            /usr/local/bin/cfn-init -v --stack Open-edX-Michigan-DataServers --resource MongoPrimaryInstance --region us-east-1
+            /usr/local/bin/cfn-init -v --stack ${AWS::StackName} --resource MongoPrimaryInstance --region ${AWS::Region}
             /usr/local/bin/cfn-signal --success true --stack ${AWS::StackName} --resource MongoPrimaryInstance --region ${AWS::Region}
     CreationPolicy:
       ResourceSignal:
@@ -88,7 +88,7 @@ Resources:
             chmod +x /etc/init.d/cfn-hup
             update-rc.d cfn-hup defaults
             service cfn-hup start
-            /usr/local/bin/cfn-init -v --stack Open-edX-Michigan-DataServers --resource MongoSecondaryInstance --region us-east-1
+            /usr/local/bin/cfn-init -v --stack ${AWS::StackName} --resource MongoSecondaryInstance --region ${AWS::Region}
             /usr/local/bin/cfn-signal --success true --stack ${AWS::StackName} --resource MongoSecondaryInstance --region ${AWS::Region}
     CreationPolicy:
       ResourceSignal:
@@ -123,7 +123,7 @@ Resources:
             chmod +x /etc/init.d/cfn-hup
             update-rc.d cfn-hup defaults
             service cfn-hup start
-            /usr/local/bin/cfn-init -v --stack Open-edX-Michigan-DataServers --resource CommonInstance --region us-east-1
+            /usr/local/bin/cfn-init -v --stack ${AWS::StackName} --resource CommonInstance --region ${AWS::Region}
             /usr/local/bin/cfn-signal --success true --stack ${AWS::StackName} --resource CommonInstance --region ${AWS::Region}
     CreationPolicy:
       ResourceSignal:
