@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Open edX App Servers
+Description: Open edX App stack
 
 Parameters:
   ProjectTag:
@@ -17,6 +17,12 @@ Parameters:
     Type: String
   AppSecurityGroupId:
     Description: app server's security group id
+    Type: String
+  ElbSecurityGroupId:
+    Description: load balancer's security group id
+    Type: String
+  SSLCertificateARN:
+    Description: ARN of SSL certificate to use for this stack
     Type: String
 
 Resources:
@@ -60,6 +66,48 @@ Resources:
     CreationPolicy:
       ResourceSignal:
         Timeout: PT10M
+  ElasticLoadBalancer:
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
+    Properties:
+      LoadBalancerName:
+        !Sub openedx-${UniversityShortName}
+      AvailabilityZones:
+        Fn::GetAZs: ''
+      Scheme:
+        internet-facing
+      SecurityGroups:
+        - !Sub ${ElbSecurityGroupId}
+      Instances:
+      - Ref: EdxAppInstance
+      Listeners:
+      - LoadBalancerPort: '80'
+        InstancePort: '80'
+        Protocol: HTTP
+        InstanceProtocol: HTTP
+      - LoadBalancerPort: '443'
+        InstancePort: '443'
+        Protocol: HTTPS
+        InstanceProtocol: HTTPS
+        SSLCertificateId: !Sub ${SSLCertificateARN}
+      - LoadBalancerPort: '18010'
+        InstancePort: '18010'
+        Protocol: HTTP
+        InstanceProtocol: HTTP
+      - LoadBalancerPort: '48010'
+        InstancePort: '48010'
+        Protocol: HTTPS
+        InstanceProtocol: HTTPS
+        SSLCertificateId: !Sub ${SSLCertificateARN}
+      HealthCheck:
+        Target: 'HTTPS:443/'
+        HealthyThreshold: '2'
+        UnhealthyThreshold: '3'
+        Interval: '5'
+        Timeout: '2'
+      Tags:
+        - Key: Project
+          Value: !Sub ${ProjectTag}
+    DependsOn: EdxAppInstance
 
 Outputs:
   EdxAppIp:

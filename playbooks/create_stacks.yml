@@ -66,7 +66,9 @@
           VPC: "vpc-2ec89b4b"
           UniversityShortName: "{{ short_name }}"
           AppSecurityGroupId: "{{ security_stack.stack_outputs.AppServerSecurityGroup }}"
+          ElbSecurityGroupId: "{{ security_stack.stack_outputs.ElbSecurityGroup }}"
           BaseAMI: "ami-fb3232ed"
+          SSLCertificateARN: "arn:aws:acm:us-east-1:154191975022:certificate/753b27e6-b2ba-47b6-b2c1-fbd55ab166a9"
         tags:
           Stack: "Open-edX-{{ full_name }}-AppServers"
           Project: "openedx"
@@ -105,6 +107,11 @@
     - blockinfile:
         dest: "{{ env_source }}"
         block:  |
+          export DOMAIN={{ DOMAIN }}
+          export PREVIEWURL={{ PREVIEWURL }}
+          export S3STORAGEBUCKET={{ S3STORAGEBUCKET }}
+          export EDXAPP_AWS_ACCESS_KEY_ID={{ EDXAPP_AWS_ACCESS_KEY_ID }}
+          export EDXAPP_AWS_SECRET_ACCESS_KEY={{ EDXAPP_AWS_SECRET_ACCESS_KEY }}
           export APP={{ edxapp }}
           export MONGO1={{ mongo1 }}
           export MONGO2={{ mongo2 }}
@@ -117,6 +124,11 @@
     - blockinfile:
         dest: "{{ env_yml }}"
         block: |
+          DOMAIN: {{ DOMAIN }}
+          PREVIEWURL: {{ PREVIEWURL }}
+          S3STORAGEBUCKET: {{ S3STORAGEBUCKET }}
+          EDXAPP_AWS_ACCESS_KEY_ID: {{ EDXAPP_AWS_ACCESS_KEY_ID }}
+          EDXAPP_AWS_SECRET_ACCESS_KEY: {{ EDXAPP_AWS_SECRET_ACCESS_KEY }}
           APP: {{ edxapp }}
           MONGO1: {{ mongo1 }}
           MONGO2: {{ mongo2 }}
@@ -140,6 +152,7 @@
     - blockinfile:
         dest: /tmp/hosts
         block: |
+
           {{ mongo1 }} mongo1
           {{ mongo2 }} mongo2
           {{ common }} elastic rabbit
