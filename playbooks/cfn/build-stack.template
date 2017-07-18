@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Open edX Build Server
+Description: Open edX Build stack
 
 Parameters:
   ProjectTag:
