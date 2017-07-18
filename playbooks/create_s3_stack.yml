@@ -1,0 +1,31 @@
+# Create Open edX data stack
+#
+# Usage:
+#   ansible-playbook -vvvv create_iam_stack.yml -e full_name=... -e short_name=...
+---
+- hosts: localhost
+  tasks:
+    - name: create Open edX S3 stack
+      cloudformation:
+        stack_name: "Open-edX-{{ full_name }}-S3"
+        region: "us-east-1"
+        state: "present"
+        template: "cfn/s3-stack.template"
+        template_parameters:
+          UniversityShortName: "{{ short_name }}"
+        tags:
+          Stack: "Open-edX-{{ full_name }}-S3"
+          Project: "openedx"
+
+
+    - name: create subfolders inside s3 bucket
+      s3:
+        bucket: "unizin-openedx-{{ short_name }}"
+        object: "{{ item }}"
+        mode: create
+      with_items:
+        - /badges
+        - /grades
+        - /images
+        - /media
+...

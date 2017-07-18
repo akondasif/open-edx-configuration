@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Open edX Data Servers
+Description: Open edX MySQL RDS
 
 Parameters:
   ProjectTag:

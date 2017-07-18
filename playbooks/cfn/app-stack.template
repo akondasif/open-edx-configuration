@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Open edX Data Servers
+Description: Open edX App Servers
 
 Parameters:
   ProjectTag:

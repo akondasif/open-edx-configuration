@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Open edX IAM user and policy
+
+Parameters:
+  ProjectTag:
+    Description: For tracking AWS expenses by project (constant)
+    Default: openedx
+    Type: String
+  UniversityShortName:
+    Description: Identifies member university
+    Type: String
+
+Resources:
+
+  OpenEdxIamUser: 
+    Type: "AWS::IAM::User"
+    Properties: 
+      UserName: !Sub "openedx-${UniversityShortName}"
+  OpenEdxIamPolicy: 
+    Type: "AWS::IAM::Policy"
+    Properties: 
+      PolicyName: !Sub "openedx-${UniversityShortName}"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Action:
+              - s3:*
+            Resource: !Sub "arn:aws:s3:::unizin-openedx-${UniversityShortName}"
+          - Effect: "Allow"
+            Action:
+              - s3:*
+            Resource: !Sub "arn:aws:s3:::unizin-openedx-${UniversityShortName}/*"
+          - Effect: "Allow"
+            Action:
+              - s3:*
+            Resource: !Sub "arn:aws:s3:::unizin-openedx-${UniversityShortName}-upload"
+          - Effect: "Allow"
+            Action:
+              - s3:*
+            Resource: !Sub "arn:aws:s3:::unizin-openedx-${UniversityShortName}-upload/*"
+      Users:
+        - !Ref OpenEdxIamUser

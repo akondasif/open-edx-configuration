@@ -1,0 +1,24 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Open edX S3 buckets
+
+Parameters:
+  ProjectTag:
+    Description: For tracking AWS expenses by project (constant)
+    Default: openedx
+    Type: String
+  UniversityShortName:
+    Description: Identifies member university
+    Type: String
+
+Resources:
+
+  OpenEdxBucket: 
+    Type: "AWS::S3::Bucket"
+    Properties: 
+      BucketName: !Sub "unizin-openedx-${UniversityShortName}"
+      AccessControl: Private
+  OpenEdxUploadBucket: 
+    Type: "AWS::S3::Bucket"
+    Properties: 
+      BucketName: !Sub "unizin-openedx-${UniversityShortName}-upload"
+      AccessControl: Private
