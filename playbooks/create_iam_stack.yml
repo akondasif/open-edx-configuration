@@ -1,9 +1,11 @@
 # Create Open edX IAM stack
 #
 # Usage:
-#   ansible-playbook -vvvv create_iam_stack.yml -e full_name=... -e short_name=...
+#   ansible-playbook -vvvv create_iam_stack.yml -e short_name=...
 ---
 - hosts: localhost
+  vars_files:
+    - [ "params/{{ short_name }}-base.yml", "params/unizin-base.yml" ]
   tasks:
     - name: create Open edX IAM stack
       cloudformation:

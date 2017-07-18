@@ -1,0 +1,11 @@
+
+# Security Group paraneters for Michigan Open edX instance
+
+build_sg: sg-d94f18a8
+full_name: Michigan
+DOMAIN: openedx-umich2.testing.unizin.org
+PREVIEWURL: openedx-preview-umich2.testing.unizin.org
+S3STORAGEBUCKET: unizin-openedx-umich3
+
+EDXAPP_AWS_ACCESS_KEY_ID: 
+EDXAPP_AWS_SECRET_ACCESS_KEY:

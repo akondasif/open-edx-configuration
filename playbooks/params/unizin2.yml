@@ -1,9 +1,0 @@
-
-# Security Group paraneters for Unizin2 Open edX instance
-
-sg_prefix: "Open-edX-Unizin2-Security"
-edxapp_sg: "{{ sg_prefix }}-AppSG-HWXS0HQOJ3FR"
-mongo_sg: "{{ sg_prefix }}-MongoSG-J28EO12TBO6K"
-common_sg: "{{ sg_prefix }}-CommonSG-EQIF8V9FF6Y3"
-
-rds_vpc_sg: sg-da8ab6a4

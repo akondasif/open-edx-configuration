@@ -1,9 +1,11 @@
 # Create Open edX data stack
 #
 # Usage:
-#   ansible-playbook -vvvv create_data_stack.yml -e full_name=... -e short_name=... -e build_sg=...
+#   ansible-playbook -vvvv create_stacks.yml -e short_name=...
 ---
 - hosts: localhost
+  vars_files:
+    - [ "params/{{ short_name }}.yml", "params/unizin.yml" ]
   tasks:
     - name: create Open edX Security stack
       cloudformation:

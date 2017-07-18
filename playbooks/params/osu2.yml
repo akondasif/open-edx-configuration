@@ -1,9 +1,0 @@
-
-# Security Group paraneters for Ohio State 2 Open edX instance
-
-sg_prefix: "Open-edX-OhioState2-Security"
-edxapp_sg: "{{ sg_prefix }}-AppSG-VIXE3S4YE3Z"
-mongo_sg: "{{ sg_prefix }}-MongoSG-L45A6FUNQ7P8"
-common_sg: "{{ sg_prefix }}-CommonSG-1CHV15IYGOGNU"
-
-rds_vpc_sg: sg-c627dab7

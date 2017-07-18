@@ -1,9 +1,0 @@
-
-# Security Group paraneters for Michigan2 Open edX instance
-
-sg_prefix: "Open-edX-Michigan2-Security"
-edxapp_sg: "{{ sg_prefix }}-AppSG-17DE0LX0CXS5Y"
-mongo_sg: "{{ sg_prefix }}-MongoSG-VPOM21WFA7YG"
-common_sg: "{{ sg_prefix }}-CommonSG-OM9FZTZPCVB0"
-
-rds_vpc_sg: sg-842ad7f5
