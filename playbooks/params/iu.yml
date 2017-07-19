@@ -1,0 +1,14 @@
+
+# Security Group paraneters for Indiana Open edX instance
+
+build_sg: sg-385f0f49
+full_name: Indiana
+DOMAIN: openedx-iu2.testing.unizin.org
+PREVIEWURL: openedx-preview-iu2.testing.unizin.org
+S3STORAGEBUCKET: unizin-openedx-iu
+
+EDXAPP_AWS_ACCESS_KEY_ID: AKIAINYWNSHNRFLX5WXQ
+EDXAPP_AWS_SECRET_ACCESS_KEY: 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
+
+EMAIL_HOST_USER: michael.steiner
+EMAIL_HOST_PASSWORD: tr^Y+filUCr4571l
