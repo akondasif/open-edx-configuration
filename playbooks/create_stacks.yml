@@ -112,6 +112,8 @@
           export S3STORAGEBUCKET={{ S3STORAGEBUCKET }}
           export EDXAPP_AWS_ACCESS_KEY_ID={{ EDXAPP_AWS_ACCESS_KEY_ID }}
           export EDXAPP_AWS_SECRET_ACCESS_KEY={{ EDXAPP_AWS_SECRET_ACCESS_KEY }}
+          export EMAIL_HOST_USER={{ EMAIL_HOST_USER }}
+          export EMAIL_HOST_PASSWORD={{ EMAIL_HOST_PASSWORD }}
           export APP={{ edxapp }}
           export MONGO1={{ mongo1 }}
           export MONGO2={{ mongo2 }}
