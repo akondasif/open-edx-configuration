@@ -3,9 +3,8 @@
 
 build_sg: sg-d94f18a8
 full_name: Michigan
-DOMAIN: openedx-umich2.testing.unizin.org
-PREVIEWURL: openedx-preview-umich2.testing.unizin.org
-S3STORAGEBUCKET: unizin-openedx-umich
+
+hosted_zone_name: testing.unizin.org.
 
 EDXAPP_AWS_ACCESS_KEY_ID: AKIAIBKWGLRTNMLPBVVA
 EDXAPP_AWS_SECRET_ACCESS_KEY: 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

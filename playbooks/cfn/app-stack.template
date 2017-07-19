@@ -15,6 +15,12 @@ Parameters:
   UniversityShortName:
     Description: Member University short identifier
     Type: String
+  AltName:
+    Description: Used to avoid conflict with URL of existing Open edX deployment
+    Type: String
+  HZName:
+    Description: Name of hosted zone for Route 53 Record Set
+    Type: String
   AppSecurityGroupId:
     Description: app server's security group id
     Type: String
@@ -32,10 +38,8 @@ Resources:
       AWS::CloudFormation::Init:
         config:
           commands:
-            newrelic:
-              command: "ansible-playbook -vvvv /var/tmp/unizin-open-edx/configuration/playbooks/setup_newrelic_infra.yml | tee /tmp/newrelic.out"
-              env:
-                NEWRELIC_LICENSE_KEY: "9de377b20faec94d4116a5bd10bb42ac8eba571d"
+            newrelic_gpg_key:
+              command: "curl https://download.newrelic.com/infrastructure_agent/gpg/newrelic-infra.gpg | sudo apt-key add -"
     Properties: 
       InstanceType: "t2.medium"
       ImageId: !Sub "${BaseAMI}"
@@ -108,6 +112,34 @@ Resources:
         - Key: Project
           Value: !Sub ${ProjectTag}
     DependsOn: EdxAppInstance
+  OpenEdxRoute53:
+    Type: "AWS::Route53::RecordSetGroup"
+    Properties:
+      HostedZoneName: !Sub ${HZName}
+      RecordSets:
+      - Name:
+          Fn::Join:
+            - ''
+            - - 'openedx-'
+              - !Ref AltName
+              - '.'
+              - !Ref HZName
+        Type: CNAME
+        TTL: '900'
+        ResourceRecords:
+        - !GetAtt ElasticLoadBalancer.DNSName
+      - Name:
+          Fn::Join:
+            - ''
+            - - 'openedx-preview-'
+              - !Ref AltName
+              - '.'
+              - !Ref HZName
+        Type: CNAME
+        TTL: '900'
+        ResourceRecords:
+        - !GetAtt ElasticLoadBalancer.DNSName
+    DependsOn: ElasticLoadBalancer
 
 Outputs:
   EdxAppIp:

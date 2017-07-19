@@ -1,12 +1,24 @@
 # Create Open edX data stack
 #
 # Usage:
-#   ansible-playbook -vvvv create_stacks.yml -e short_name=...
+#   ansible-playbook -vvvv create_stacks.yml -e short_name=... -e bypass=...
+#     bypass is an optional parameter, its default value is short_name
 ---
 - hosts: localhost
   vars_files:
     - [ "params/{{ short_name }}.yml", "params/unizin.yml" ]
   tasks:
+    - name: default value for optional bypass parameter
+      set_fact:
+        bypass: "{{ short_name }}"
+      when: bypass is undefined
+
+    - name: set DOMAIN, PREVIEWURL, and S3ST0RAGEBUCKET
+      set_fact:
+        DOMAIN: "openedx-{{ bypass }}.{{ hosted_zone_name }}"
+        PREVIEWURL: "openedx-preview-{{ bypass }}.{{ hosted_zone_name }}"
+        S3STORAGEBUCKET: "unizin-openedx-{{ bypass }}"
+
     - name: create Open edX Security stack
       cloudformation:
         stack_name: "Open-edX-{{ full_name }}-Security"
@@ -64,7 +76,9 @@
         template: "cfn/app-stack.template"
         template_parameters:
           VPC: "vpc-2ec89b4b"
+          HZName: "{{ hosted_zone_name }}"
           UniversityShortName: "{{ short_name }}"
+          AltName: "{{ bypass }}"
           AppSecurityGroupId: "{{ security_stack.stack_outputs.AppServerSecurityGroup }}"
           ElbSecurityGroupId: "{{ security_stack.stack_outputs.ElbSecurityGroup }}"
           BaseAMI: "ami-fb3232ed"

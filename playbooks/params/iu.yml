@@ -3,9 +3,8 @@
 
 build_sg: sg-385f0f49
 full_name: Indiana
-DOMAIN: openedx-iu2.testing.unizin.org
-PREVIEWURL: openedx-preview-iu2.testing.unizin.org
-S3STORAGEBUCKET: unizin-openedx-iu
+
+hosted_zone_name: testing.unizin.org.
 
 EDXAPP_AWS_ACCESS_KEY_ID: AKIAINYWNSHNRFLX5WXQ
 EDXAPP_AWS_SECRET_ACCESS_KEY: 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

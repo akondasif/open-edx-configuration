@@ -3,9 +3,8 @@
 
 build_sg: sg-d35505a2
 full_name: Ohio
-DOMAIN: openedx-osu2.testing.unizin.org
-PREVIEWURL: openedx-preview-osu2.testing.unizin.org
-S3STORAGEBUCKET: unizin-openedx-osu
+
+hosted_zone_name: testing.unizin.org.
 
 EDXAPP_AWS_ACCESS_KEY_ID: AKIAJAX6KOXPCP7BZP2A
 EDXAPP_AWS_SECRET_ACCESS_KEY: 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
