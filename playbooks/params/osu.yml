@@ -1,5 +1,5 @@
 
-# Security Group paraneters for Ohio State Open edX instance
+# Open edX ansible/cloudformation build paraneters for Ohio State Open edX instance
 
 build_sg: sg-d35505a2
 full_name: Ohio

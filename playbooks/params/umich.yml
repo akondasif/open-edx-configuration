@@ -1,5 +1,5 @@
 
-# Security Group paraneters for Michigan Open edX instance
+# Open edX ansible/cloudformation build paraneters for Michigan Open edX instance
 
 build_sg: sg-d94f18a8
 full_name: Michigan

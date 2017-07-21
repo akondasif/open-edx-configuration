@@ -1,5 +1,5 @@
 
-# Security Group paraneters for Indiana Open edX instance
+# Open edX ansible/cloudformation build paraneters for Indiana Open edX instance
 
 build_sg: sg-385f0f49
 full_name: Indiana
