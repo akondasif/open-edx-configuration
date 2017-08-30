@@ -17,8 +17,18 @@ Resources:
     Properties: 
       BucketName: !Sub "unizin-openedx-${UniversityShortName}"
       AccessControl: Private
+      VersioningConfiguration:
+        Status: Enabled
+      Tags:
+        - Key: Project
+          Value: !Sub ${ProjectTag}
   OpenEdxUploadBucket: 
     Type: "AWS::S3::Bucket"
     Properties: 
       BucketName: !Sub "unizin-openedx-${UniversityShortName}-upload"
       AccessControl: Private
+      VersioningConfiguration:
+        Status: Enabled
+      Tags:
+        - Key: Project
+          Value: !Sub ${ProjectTag}
