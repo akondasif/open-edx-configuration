@@ -178,6 +178,7 @@
         name: "{{ edxapp }}"
         groups: nonlocal
 
+    - add_host:
         name: "{{ mongo1 }}"
         groups: nonlocal
 
@@ -188,6 +189,34 @@
     - add_host:
         name: "{{ common }}"
         groups: nonlocal
+
+    - name: Wait for SSH to mongo1 to come up
+      wait_for: host={{ mongo1 }} port=22 delay=60 timeout=320 state=started
+
+    - name: Wait for SSH to mongo2 to come up
+      wait_for: host={{ mongo2 }} port=22 delay=60 timeout=320 state=started
+
+    - name: Wait for SSH to common to come up
+      wait_for: host={{ common }} port=22 delay=60 timeout=320 state=started
+
+    - name: Wait for SSH to edxapp to come up
+      wait_for: host={{ edxapp }} port=22 delay=60 timeout=320 state=started
+
+
+    - name: set variable for new relic license key
+      set_fact:
+        NEWRELIC_LICENSE_KEY: "{{ NEWRELIC_LICENSE_KEY }}"
+
+
+- name: install and configure New Relic Infrastructure
+  hosts: nonlocal
+  become: yes
+  vars:
+    software_key_prefix: "openedx-{{ short_name }}.testing.unizin.org"
+    environment_name: dev
+    NEWRELIC_LICENSE_KEY: "{{ hostvars['localhost']['NEWRELIC_LICENSE_KEY'] }}"
+  roles:
+    - newrelic-infra-unizin
 
 
 - hosts: nonlocal
