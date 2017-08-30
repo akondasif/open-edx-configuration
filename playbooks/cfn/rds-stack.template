@@ -41,6 +41,7 @@ Resources:
       MasterUserPassword:
         Ref: "DBPassword"
       PubliclyAccessible: false
+      BackupRetentionPeriod: 14
       VPCSecurityGroups: 
         - !Sub ${RdsSecurityGroupId}
       Tags:
