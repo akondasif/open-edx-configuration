@@ -95,8 +95,8 @@
         mongo1: "{{ data_stack.stack_outputs.MongoPrimaryIp }}"
         mongo2: "{{ data_stack.stack_outputs.MongoSecondaryIp }}"
         common: "{{ data_stack.stack_outputs.CommonServerIp }}"
-        env_source: "/tmp/env.sh"
-        env_yml: "/tmp/env.yml"
+        env_source: "/home/ubuntu/env.sh"
+        env_yml: "/home/ubuntu/env.yml"
 
     - name: delete file if it already exists
       file:
@@ -155,25 +155,6 @@
         insertafter: EOF
 
 
-    - name: delete file if it already exists
-      file:
-        dest: /tmp/hosts
-        state: absent
-
-    - name: create file
-      file:
-        dest: /tmp/hosts
-        state: touch
-
-    - blockinfile:
-        dest: /tmp/hosts
-        block: |
-
-          {{ mongo1 }} mongo1
-          {{ mongo2 }} mongo2
-          {{ common }} elastic rabbit
-        insertafter: EOF
-
     - add_host:
         name: "{{ edxapp }}"
         groups: nonlocal
@@ -191,21 +172,40 @@
         groups: nonlocal
 
     - name: Wait for SSH to mongo1 to come up
-      wait_for: host={{ mongo1 }} port=22 delay=60 timeout=320 state=started
+      wait_for: host={{ mongo1 }} port=22 timeout=320 state=started
 
     - name: Wait for SSH to mongo2 to come up
-      wait_for: host={{ mongo2 }} port=22 delay=60 timeout=320 state=started
+      wait_for: host={{ mongo2 }} port=22 timeout=320 state=started
 
     - name: Wait for SSH to common to come up
-      wait_for: host={{ common }} port=22 delay=60 timeout=320 state=started
+      wait_for: host={{ common }} port=22 timeout=320 state=started
 
     - name: Wait for SSH to edxapp to come up
-      wait_for: host={{ edxapp }} port=22 delay=60 timeout=320 state=started
+      wait_for: host={{ edxapp }} port=22 delay=30 timeout=320 state=started
 
 
     - name: set variable for new relic license key
       set_fact:
         NEWRELIC_LICENSE_KEY: "{{ NEWRELIC_LICENSE_KEY }}"
+
+
+- name: Update /etc/hosts on data/app servers
+  hosts: nonlocal
+  become: yes
+  vars:
+    mongo1: "{{ hostvars['localhost']['mongo1'] }}"
+    mongo2: "{{ hostvars['localhost']['mongo2'] }}"
+    common: "{{ hostvars['localhost']['common'] }}"
+  tasks:
+
+    - name: Update /etc/hosts
+      blockinfile:
+        dest: /etc/hosts
+        block: |
+          {{ mongo1 }} mongo1
+          {{ mongo2 }} mongo2
+          {{ common }} elastic rabbit
+        insertafter: "127.0.0.1 localhost"
 
 
 - name: install and configure New Relic Infrastructure
