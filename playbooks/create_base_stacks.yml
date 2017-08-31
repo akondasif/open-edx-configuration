@@ -1,11 +1,11 @@
 # Create Open edX IAM and S3 stacks
 #
 # Usage:
-#   ansible-playbook -vvvv create_base_stacks.yml -e short_name=...
+#   ansible-playbook -vvvv create_base_stacks.yml -e env=... -e short_name=...
 ---
 - hosts: localhost
   vars_files:
-    - [ "params/{{ short_name }}-base.yml", "params/unizin-base.yml" ]
+    - [ "params/{{ short_name }}-{{ env }}-base.yml", "params/unizin-dev-base.yml" ]
   tasks:
     - name: create Open edX IAM stack
       cloudformation:
@@ -26,6 +26,7 @@
         state: "present"
         template: "cfn/s3-stack.template"
         template_parameters:
+          EnvironmentName: "{{ env }}"
           UniversityShortName: "{{ short_name }}"
         tags:
           Stack: "Open-edX-{{ full_name }}-S3"
@@ -34,7 +35,7 @@
 
     - name: create subfolders inside s3 bucket
       s3:
-        bucket: "unizin-openedx-{{ short_name }}"
+        bucket: "unizin-{{ env }}-openedx-{{ short_name }}"
         object: "{{ item }}"
         mode: create
       with_items:

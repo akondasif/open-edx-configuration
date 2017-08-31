@@ -6,6 +6,9 @@ Parameters:
     Description: For tracking AWS expenses by project (constant)
     Default: openedx
     Type: String
+  EnvironmentName:
+    Description: dev, test, or prod
+    Type: String
   UniversityShortName:
     Description: Identifies member university
     Type: String
@@ -15,7 +18,7 @@ Resources:
   OpenEdxBucket: 
     Type: "AWS::S3::Bucket"
     Properties: 
-      BucketName: !Sub "unizin-openedx-${UniversityShortName}"
+      BucketName: !Sub "unizin-${EnvironmentName}-openedx-${UniversityShortName}"
       AccessControl: Private
       VersioningConfiguration:
         Status: Enabled
@@ -25,7 +28,7 @@ Resources:
   OpenEdxUploadBucket: 
     Type: "AWS::S3::Bucket"
     Properties: 
-      BucketName: !Sub "unizin-openedx-${UniversityShortName}-upload"
+      BucketName: !Sub "unizin-${EnvironmentName}-openedx-${UniversityShortName}-upload"
       AccessControl: Private
       VersioningConfiguration:
         Status: Enabled

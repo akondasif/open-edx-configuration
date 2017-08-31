@@ -1,11 +1,11 @@
 # Create AWS resources for Open edX build server (IAM user, ec2 security group, ec2 instance)
 #
 # Usage:
-#   ansible-playbook -vvvv create_build_stack.yml -e short_name=...
+#   ansible-playbook -vvvv create_build_stack.yml -e env=... -e short_name=...
 ---
 - hosts: localhost
   vars_files:
-    - [ "params/{{ short_name }}-base.yml", "params/unizin-base.yml" ]
+    - [ "params/{{ short_name }}-{{ env }}-base.yml", "params/unizin-dev-base.yml" ]
   tasks:
     - name: create Open edX build stack
       cloudformation:
@@ -14,8 +14,8 @@
         state: "present"
         template: "cfn/build-stack.template"
         template_parameters:
-          VPC: "vpc-2ec89b4b"
-          BaseAMI: "ami-11647307"
+          VPC: "{{ vpc }}"
+          BaseAMI: "{{ base_ami }}"
           UniversityShortName: "{{ short_name }}"
         tags:
           Stack: "Open-edX-{{ full_name }}-Build"
