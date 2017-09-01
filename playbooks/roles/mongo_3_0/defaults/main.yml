@@ -28,14 +28,14 @@ mongodb_debian_pkgs:
 
 # Vars Meant to be overridden
 MONGO_ADMIN_USER: 'admin'
-MONGO_ADMIN_PASSWORD: 'password'
+MONGO_ADMIN_PASSWORD: "{{ lookup('env','MONGO_ADMIN_PASSWORD') }}"
 MONGO_USERS:
   - user: cs_comments_service
-    password: password
+    password: "{{ lookup('env','FORUM_MONGO_PASSWORD') }}"
     database: cs_comments_service
     roles: readWrite
   - user: edxapp
-    password: password
+    password: "{{ lookup('env','EDXAPP_MONGO_PASSWORD') }}"
     database: edxapp
     roles: readWrite
 

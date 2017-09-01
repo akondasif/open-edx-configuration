@@ -1,12 +1,12 @@
 # Create Open edX data stack
 #
 # Usage:
-#   ansible-playbook -vvvv create_stacks.yml -e short_name=... -e bypass=...
+#   ansible-playbook -vvvv create_stacks.yml -e env=... -e short_name=... -e bypass=...
 #     bypass is an optional parameter, its default value is short_name
 ---
 - hosts: localhost
   vars_files:
-    - [ "params/{{ short_name }}.yml", "params/unizin.yml" ]
+    - [ "params/{{ short_name }}-{{ env }}.yml", "params/unizin-dev.yml" ]
   tasks:
     - name: default value for optional bypass parameter
       set_fact:
@@ -15,9 +15,9 @@
 
     - name: set DOMAIN, PREVIEWURL, and S3ST0RAGEBUCKET
       set_fact:
-        DOMAIN: "openedx-{{ bypass }}.{{ hosted_zone_name }}"
-        PREVIEWURL: "openedx-preview-{{ bypass }}.{{ hosted_zone_name }}"
-        S3STORAGEBUCKET: "unizin-openedx-{{ bypass }}"
+        DOMAIN: "{{ bypass }}.{{ hosted_zone_minus_period }}"
+        PREVIEWURL: "{{ bypass }}-preview.{{ hosted_zone_minus_period }}"
+        S3STORAGEBUCKET: "unizin-{{ env }}-openedx-{{ bypass }}"
 
     - name: create Open edX Security stack
       cloudformation:
@@ -26,7 +26,7 @@
         state: "present"
         template: "cfn/security-stack.template"
         template_parameters:
-          VPC: "vpc-2ec89b4b"
+          VPC: "{{ vpc }}"
           UniversityShortName: "{{ short_name }}"
           BuildServerSecurityGroupId: "{{ build_sg }}"
         tags:
@@ -42,8 +42,8 @@
         template: "cfn/rds-stack.template"
         template_parameters:
           UniversityShortName: "{{ short_name }}"
-          DBUser: "root"
-          DBPassword: "password"
+          DBUser: "{{ MYSQL_ADMIN_USER }}"
+          DBPassword: "{{ MYSQL_ADMIN_PASSWORD }}"
           RdsAllocatedStorage: 5
           RdsSecurityGroupId: "{{ security_stack.stack_outputs.RdsSecurityGroup }}"
         tags:
@@ -58,11 +58,11 @@
         state: "present"
         template: "cfn/data-stack.template"
         template_parameters:
-          VPC: "vpc-2ec89b4b"
+          VPC: "{{ vpc }}"
           UniversityShortName: "{{ short_name }}"
           MongoSecurityGroupId: "{{ security_stack.stack_outputs.MongoServerSecurityGroup }}"
           CommonSecurityGroupId: "{{ security_stack.stack_outputs.CommonServerSecurityGroup }}"
-          BaseAMI: "ami-fb3232ed"
+          BaseAMI: "{{ base_ami }}"
         tags:
           Stack: "Open-edX-{{ full_name }}-DataServers"
           Project: "openedx"
@@ -75,14 +75,14 @@
         state: "present"
         template: "cfn/app-stack.template"
         template_parameters:
-          VPC: "vpc-2ec89b4b"
+          VPC: "{{ vpc }}"
           HZName: "{{ hosted_zone_name }}"
           UniversityShortName: "{{ short_name }}"
           AltName: "{{ bypass }}"
           AppSecurityGroupId: "{{ security_stack.stack_outputs.AppServerSecurityGroup }}"
           ElbSecurityGroupId: "{{ security_stack.stack_outputs.ElbSecurityGroup }}"
-          BaseAMI: "ami-fb3232ed"
-          SSLCertificateARN: "arn:aws:acm:us-east-1:154191975022:certificate/753b27e6-b2ba-47b6-b2c1-fbd55ab166a9"
+          BaseAMI: "{{ base_ami }}"
+          SSLCertificateARN: "arn:aws:acm:us-east-1:489515563883:certificate/22bea6d7-b4f1-4096-be08-196c591c3e72"
         tags:
           Stack: "Open-edX-{{ full_name }}-AppServers"
           Project: "openedx"
@@ -135,6 +135,26 @@
           export ELASTIC={{ common }}
           export RABBIT={{ common }}
           export RDS={{ rds_stack.stack_outputs.RdsEndpointAddress }}
+
+          # MySQL
+          export MYSQL_ADMIN_USER={{ MYSQL_ADMIN_USER }}
+          export MYSQL_ADMIN_PASSWORD={{ MYSQL_ADMIN_PASSWORD }}
+
+          export COMMON_MYSQL_ADMIN_PASS={{ COMMON_MYSQL_ADMIN_PASS }}
+          export COMMON_MYSQL_MIGRATE_PASS={{ COMMON_MYSQL_MIGRATE_PASS }}
+          export COMMON_MYSQL_READ_ONLY_PASS={{ COMMON_MYSQL_READ_ONLY_PASS }}
+
+          export EDXAPP_MYSQL_PASSWORD={{ EDXAPP_MYSQL_PASSWORD }}
+          export EDXAPP_MYSQL_PASSWORD_READ_ONLY={{ EDXAPP_MYSQL_PASSWORD_READ_ONLY }}
+          export EDXAPP_MYSQL_PASSWORD_ADMIN={{ EDXAPP_MYSQL_PASSWORD_ADMIN }}
+
+          export XQUEUE_MYSQL_PASSWORD={{ XQUEUE_MYSQL_PASSWORD }}
+
+          # MongoDB
+          export MONGO_ADMIN_PASSWORD={{ MONGO_ADMIN_PASSWORD }}
+          export EDXAPP_MONGO_PASSWORD={{ EDXAPP_MONGO_PASSWORD }}
+          export FORUM_MONGO_PASSWORD={{ FORUM_MONGO_PASSWORD }}
+
         insertafter: EOF
 
     - blockinfile:
@@ -212,7 +232,7 @@
   hosts: nonlocal
   become: true
   vars:
-    software_key_prefix: "openedx-{{ short_name }}.testing.unizin.org"
+    software_key_prefix: "openedx-{{ short_name }}.{{ hosted_zone_minus_period }}"
     environment_name: dev
     NEWRELIC_LICENSE_KEY: "{{ hostvars['localhost']['NEWRELIC_LICENSE_KEY'] }}"
   roles:

@@ -13,7 +13,7 @@ forum_gem_bin: "{{ forum_gem_root }}/bin"
 forum_path: "{{ forum_binstubs_dir }}:{{ forum_rbenv_bin }}:{{ forum_rbenv_shims }}:{{ forum_gem_bin }}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 FORUM_MONGO_USER: "cs_comments_service"
-FORUM_MONGO_PASSWORD: "password"
+FORUM_MONGO_PASSWORD: "{{ lookup('env','FORUM_MONGO_PASSWORD') }}"
 FORUM_MONGO_HOSTS:
   - "mongo1"
   - "mongo2"
