@@ -14,6 +14,7 @@
         state: "present"
         template: "cfn/iam-stack.template"
         template_parameters:
+          EnvironmentName: "{{ env }}"
           UniversityShortName: "{{ short_name }}"
         tags:
           Stack: "Open-edX-{{ full_name }}-IAM"

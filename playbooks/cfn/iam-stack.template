@@ -6,6 +6,9 @@ Parameters:
     Description: For tracking AWS expenses by project (constant)
     Default: openedx
     Type: String
+  EnvironmentName:
+    Description: dev, test, or prod
+    Type: String
   UniversityShortName:
     Description: Identifies member university
     Type: String
@@ -26,18 +29,18 @@ Resources:
           - Effect: "Allow"
             Action:
               - s3:*
-            Resource: !Sub "arn:aws:s3:::unizin-openedx-${UniversityShortName}"
+            Resource: !Sub "arn:aws:s3:::unizin-${EnvironmentName}-openedx-${UniversityShortName}"
           - Effect: "Allow"
             Action:
               - s3:*
-            Resource: !Sub "arn:aws:s3:::unizin-openedx-${UniversityShortName}/*"
+            Resource: !Sub "arn:aws:s3:::unizin-${EnvironmentName}-openedx-${UniversityShortName}/*"
           - Effect: "Allow"
             Action:
               - s3:*
-            Resource: !Sub "arn:aws:s3:::unizin-openedx-${UniversityShortName}-upload"
+            Resource: !Sub "arn:aws:s3:::unizin-${EnvironmentName}-openedx-${UniversityShortName}-upload"
           - Effect: "Allow"
             Action:
               - s3:*
-            Resource: !Sub "arn:aws:s3:::unizin-openedx-${UniversityShortName}-upload/*"
+            Resource: !Sub "arn:aws:s3:::unizin-${EnvironmentName}-openedx-${UniversityShortName}-upload/*"
       Users:
         - !Ref OpenEdxIamUser
