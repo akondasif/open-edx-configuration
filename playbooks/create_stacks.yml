@@ -118,6 +118,7 @@
         dest: "{{ env_yml }}"
         state: touch
 
+
     - blockinfile:
         dest: "{{ env_source }}"
         block:  |
@@ -143,6 +144,10 @@
           export COMMON_MYSQL_ADMIN_PASS={{ COMMON_MYSQL_ADMIN_PASS }}
           export COMMON_MYSQL_MIGRATE_PASS={{ COMMON_MYSQL_MIGRATE_PASS }}
           export COMMON_MYSQL_READ_ONLY_PASS={{ COMMON_MYSQL_READ_ONLY_PASS }}
+
+          # see: https://github.com/edx/xqueue/blob/master/xqueue/aws_settings.py#L52
+          export DB_MIGRATION_USER={{ COMMON_MYSQL_MIGRATE_USER }}
+          export DB_MIGRATION_PASS={{ COMMON_MYSQL_MIGRATE_PASS }}
 
           export EDXAPP_MYSQL_PASSWORD={{ EDXAPP_MYSQL_PASSWORD }}
           export EDXAPP_MYSQL_PASSWORD_READ_ONLY={{ EDXAPP_MYSQL_PASSWORD_READ_ONLY }}

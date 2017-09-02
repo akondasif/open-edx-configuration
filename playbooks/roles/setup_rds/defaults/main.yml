@@ -5,7 +5,7 @@ rdsPass: "{{ lookup('env','MYSQL_ADMIN_PASSWORD') }}"
 
 edxRdsHost: "{{ lookup('env','RDS') }}"
 
-COMMON_MYSQL_MIGRATE_USER: 'migrate'
+COMMON_MYSQL_MIGRATE_USER: "{{ lookup('env','COMMON_MYSQL_MIGRATE_USER') }}"
 COMMON_MYSQL_MIGRATE_PASS: "{{ lookup('env','COMMON_MYSQL_MIGRATE_PASS') }}"
 
 COMMON_MYSQL_READ_ONLY_USER: 'read_only'
@@ -13,6 +13,10 @@ COMMON_MYSQL_READ_ONLY_PASS: "{{ lookup('env','COMMON_MYSQL_READ_ONLY_PASS') }}"
 
 COMMON_MYSQL_ADMIN_USER: 'admin'
 COMMON_MYSQL_ADMIN_PASS: "{{ lookup('env','COMMON_MYSQL_ADMIN_PASS') }}"
+
+EDXAPP_MYSQL_PASSWORD: "{{ lookup('env','EDXAPP_MYSQL_PASSWORD') }}"
+EDXAPP_MYSQL_CSMH_PASSWORD: "{{ EDXAPP_MYSQL_PASSWORD }}"
+XQUEUE_MYSQL_PASSWORD: "{{ lookup('env','XQUEUE_MYSQL_PASSWORD') }}"
 
 edxlocal_databases:
   - "{{ ECOMMERCE_DEFAULT_DB_NAME | default('ecommerce') }}"

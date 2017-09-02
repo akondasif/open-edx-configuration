@@ -120,8 +120,7 @@ Resources:
       - Name:
           Fn::Join:
             - ''
-            - - 'openedx-'
-              - !Ref AltName
+            - - !Ref AltName
               - '.'
               - !Ref HZName
         Type: CNAME
@@ -131,8 +130,8 @@ Resources:
       - Name:
           Fn::Join:
             - ''
-            - - 'openedx-preview-'
-              - !Ref AltName
+            - - !Ref AltName
+              - '-preview'
               - '.'
               - !Ref HZName
         Type: CNAME
