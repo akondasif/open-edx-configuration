@@ -18,6 +18,7 @@
         DOMAIN: "{{ bypass }}.{{ hosted_zone_minus_period }}"
         PREVIEWURL: "{{ bypass }}-preview.{{ hosted_zone_minus_period }}"
         S3STORAGEBUCKET: "unizin-{{ env }}-openedx-{{ bypass }}"
+        environment_name: "{{ env }}"
 
     - name: create Open edX Security stack
       cloudformation:
@@ -96,26 +97,15 @@
         mongo2: "{{ data_stack.stack_outputs.MongoSecondaryIp }}"
         common: "{{ data_stack.stack_outputs.CommonServerIp }}"
         env_source: "/home/ubuntu/env.sh"
-        env_yml: "/home/ubuntu/env.yml"
 
     - name: delete file if it already exists
       file:
         dest: "{{ env_source }}"
         state: absent
 
-    - name: delete file if it already exists
-      file:
-        dest: "{{ env_yml }}"
-        state: absent
-
     - name: create file
       file:
         dest: "{{ env_source }}"
-        state: touch
-
-    - name: create file
-      file:
-        dest: "{{ env_yml }}"
         state: touch
 
 
@@ -160,23 +150,6 @@
           export EDXAPP_MONGO_PASSWORD={{ EDXAPP_MONGO_PASSWORD }}
           export FORUM_MONGO_PASSWORD={{ FORUM_MONGO_PASSWORD }}
 
-        insertafter: EOF
-
-    - blockinfile:
-        dest: "{{ env_yml }}"
-        block: |
-          DOMAIN: {{ DOMAIN }}
-          PREVIEWURL: {{ PREVIEWURL }}
-          S3STORAGEBUCKET: {{ S3STORAGEBUCKET }}
-          EDXAPP_AWS_ACCESS_KEY_ID: {{ EDXAPP_AWS_ACCESS_KEY_ID }}
-          EDXAPP_AWS_SECRET_ACCESS_KEY: {{ EDXAPP_AWS_SECRET_ACCESS_KEY }}
-          APP: {{ edxapp }}
-          MONGO1: {{ mongo1 }}
-          MONGO2: {{ mongo2 }}
-          COMMON: {{ common }}
-          ELASTIC: {{ common }}
-          RABBIT: {{ common }}
-          RDS: {{ rds_stack.stack_outputs.RdsEndpointAddress }}
         insertafter: EOF
 
 
@@ -237,9 +210,9 @@
   hosts: nonlocal
   become: true
   vars:
-    software_key_prefix: "openedx-{{ short_name }}.{{ hosted_zone_minus_period }}"
-    environment_name: dev
     NEWRELIC_LICENSE_KEY: "{{ hostvars['localhost']['NEWRELIC_LICENSE_KEY'] }}"
+    environment_name: "{{ hostvars['localhost']['environment_name'] }}"
+    software_key_prefix: "{{ hostvars['localhost']['DOMAIN'] }}"
   roles:
     - newrelic-infra-unizin
 
