@@ -1,0 +1,8 @@
+- name: set up MySQL RDS
+  hosts: localhost
+  vars_files:
+    - [ "../params/{{ short_name }}-{{ env }}.yml", "../params/unizin-dev.yml" ]
+  vars:
+    RdsEndpointAddress: "{{ rds_stack.stack_outputs.RdsEndpointAddress }}"
+  roles:
+    - { role: setup_rds, when: "rds_stack|changed"}

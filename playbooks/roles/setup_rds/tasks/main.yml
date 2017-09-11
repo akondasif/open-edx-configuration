@@ -4,7 +4,7 @@
     db: "{{ item }}"
     state: present
     encoding: utf8
-    login_host: "{{ edxRdsHost }}"
+    login_host: "{{ RdsEndpointAddress }}"
     login_user: "{{ rdsUser }}"
     login_password: "{{ rdsPass }}"
   when: item != None and item != ''
@@ -15,7 +15,7 @@
     name: "{{ item.user }}"
     password: "{{ item.pass }}"
     priv: "{{ item.db }}.*:ALL"
-    login_host: "{{ edxRdsHost }}"
+    login_host: "{{ RdsEndpointAddress }}"
     login_user: "{{ rdsUser }}"
     login_password: "{{ rdsPass }}"
     host: '%'
@@ -29,7 +29,7 @@
     password: "{{ COMMON_MYSQL_MIGRATE_PASS }}"
     priv: "{{ item }}.*:ALL"
     host: '%'
-    login_host: "{{ edxRdsHost }}"
+    login_host: "{{ RdsEndpointAddress }}"
     login_user: "{{ rdsUser }}"
     login_password: "{{ rdsPass }}"
     append_privs: yes
@@ -41,7 +41,7 @@
     name: "api001"
     password: "{{ ANALYTICS_API_DATABASES.default.PASSWORD }}"
     priv: '{{ ANALYTICS_API_DATABASES.default.NAME }}.*:ALL/reports.*:SELECT'
-    login_host: "{{ edxRdsHost }}"
+    login_host: "{{ RdsEndpointAddress }}"
     login_user: "{{ rdsUser }}"
     login_password: "{{ rdsPass }}"
   when: ANALYTICS_API_SERVICE_CONFIG is defined
@@ -51,7 +51,7 @@
     name: reports001
     password: "{{ ANALYTICS_API_DATABASES.reports.PASSWORD }}"
     priv: '{{ ANALYTICS_API_DATABASES.reports.NAME }}.*:SELECT'
-    login_host: "{{ edxRdsHost }}" 
+    login_host: "{{ RdsEndpointAddress }}"
     login_user: "{{ rdsUser }}"
     login_password: "{{ rdsPass }}"
   when: ANALYTICS_API_SERVICE_CONFIG is defined
@@ -61,7 +61,7 @@
     db: "{{ HIVE_METASTORE_DATABASE.name }}"
     state: "present"
     encoding: "latin1"
-    login_host: "{{ edxRdsHost }}"
+    login_host: "{{ RdsEndpointAddress }}"
     login_user: "{{ rdsUser }}"
     login_password: "{{ rdsPass }}"
   when: HIVE_METASTORE_DATABASE is defined
@@ -71,7 +71,7 @@
     name: "{{ EDX_NOTES_API_MYSQL_DB_USER }}"
     password: "{{ EDX_NOTES_API_MYSQL_DB_PASS }}"
     priv: "{{ EDX_NOTES_API_MYSQL_DB_NAME }}.*:SELECT,INSERT,UPDATE,DELETE"
-    login_host: "{{ edxRdsHost }}"
+    login_host: "{{ RdsEndpointAddress }}"
     login_user: "{{ rdsUser }}"
     login_password: "{{ rdsPass }}"
   when: EDX_NOTES_API_MYSQL_DB_USER is defined
@@ -82,7 +82,7 @@
     password: "{{ COMMON_MYSQL_READ_ONLY_PASS }}"
     priv: "'%'.*:ALL"
     host: '%'
-    login_host: "{{ edxRdsHost }}"
+    login_host: "{{ RdsEndpointAddress }}"
     login_user: "{{ rdsUser }}"
     login_password: "{{ rdsPass }}"
 
@@ -91,7 +91,7 @@
     name: "{{ COMMON_MYSQL_ADMIN_USER }}"
     password: "{{ COMMON_MYSQL_ADMIN_PASS }}"
     priv: "*.*:CREATE USER"
-    login_host: "{{ edxRdsHost }}"
+    login_host: "{{ RdsEndpointAddress }}"
     login_user: "{{ rdsUser }}"
     login_password: "{{ rdsPass }}"
 ...

@@ -1,0 +1,16 @@
+
+# Open edX ansible/cloudformation build paraneters for Unizin2 Open edX instance
+
+build_sg: sg-f6c7f487
+full_name: Unizin2
+
+hosted_zone_no_period: testing.unizin.org
+hosted_zone_name: testing.unizin.org.
+
+EDXAPP_AWS_ACCESS_KEY_ID: AKIAJKFW3GCONS3OMTKQ
+EDXAPP_AWS_SECRET_ACCESS_KEY: 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
+
+NEWRELIC_LICENSE_KEY: 9de377b20faec94d4116a5bd10bb42ac8eba571d
+
+EMAIL_HOST_USER: michael.steiner
+EMAIL_HOST_PASSWORD: tr^Y+filUCr4571l

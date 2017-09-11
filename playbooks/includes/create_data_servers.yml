@@ -1,0 +1,70 @@
+- name: create Open edX data servers
+  hosts: localhost
+  vars_files:
+    - [ "../params/{{ short_name }}-{{ env }}.yml", "../params/unizin-dev.yml" ]
+  tasks:
+    - cloudformation:
+        stack_name: "Open-edX-{{ full_name }}-DataServers"
+        region: "us-east-1"
+        state: "present"
+        template: "../cfn/data-stack.template"
+        template_parameters:
+          VPC: "vpc-2ec89b4b"
+          UniversityShortName: "{{ short_name }}"
+          MongoSecurityGroupId: "{{ security_stack.stack_outputs.MongoServerSecurityGroup }}"
+          CommonSecurityGroupId: "{{ security_stack.stack_outputs.CommonServerSecurityGroup }}"
+          BaseAMI: "ami-fb3232ed"
+        tags:
+          Stack: "Open-edX-{{ full_name }}-DataServers"
+          Project: "openedx"
+      register: "data_stack"
+
+
+    - name: set variables for server ips
+      set_fact:
+        MONGO_ADMIN_PASSWORD: "{{ MONGO_ADMIN_PASSWORD }}"
+        EDXAPP_MONGO_PASSWORD: "{{ EDXAPP_MONGO_PASSWORD }}"
+        FORUM_MONGO_PASSWORD: "{{ FORUM_MONGO_PASSWORD }}"
+        MYSQL_ADMIN_USER: "{{ MYSQL_ADMIN_USER }}"
+        MYSQL_ADMIN_PASSWORD: "{{ MYSQL_ADMIN_PASSWORD }}"
+        COMMON_MYSQL_MIGRATE_USER: "{{ COMMON_MYSQL_MIGRATE_USER }}"
+        COMMON_MYSQL_MIGRATE_PASS: "{{ COMMON_MYSQL_MIGRATE_PASS }}"
+        XQUEUE_MYSQL_PASSWORD: "{{ XQUEUE_MYSQL_PASSWORD }}"
+        mongo1: "{{ data_stack.stack_outputs.MongoPrimaryIp }}"
+        mongo2: "{{ data_stack.stack_outputs.MongoSecondaryIp }}"
+        common: "{{ data_stack.stack_outputs.CommonServerIp }}"
+
+    - add_host:
+        name: "{{ mongo1 }}"
+        groups: nonlocal
+
+    - add_host:
+        name: "{{ mongo2 }}"
+        groups: nonlocal
+
+    - add_host:
+        name: "{{ common }}"
+        groups: nonlocal
+
+
+    - add_host:
+        name: "{{ mongo1 }}"
+        groups: mongo
+
+    - add_host:
+        name: "{{ mongo2 }}"
+        groups: mongo
+
+
+    - add_host:
+        name: "{{ mongo1 }}"
+        groups: mongo1
+
+    - add_host:
+        name: "{{ mongo2 }}"
+        groups: mongo2
+
+    - add_host:
+        name: "{{ common }}"
+        groups: common
+

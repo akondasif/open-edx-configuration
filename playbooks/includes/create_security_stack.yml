@@ -1,0 +1,19 @@
+- name: create security groups
+  hosts: localhost
+  vars_files:
+    - [ "../params/{{ short_name }}.yml", "../params/unizin.yml" ]
+  tasks:
+    - name: create Open edX Security stack
+      cloudformation:
+        stack_name: "Open-edX-{{ full_name }}-Security"
+        region: "us-east-1"
+        state: "present"
+        template: "../cfn/security-stack.template"
+        template_parameters:
+          VPC: "vpc-2ec89b4b"
+          UniversityShortName: "{{ short_name }}"
+          BuildServerSecurityGroupId: "{{ build_sg }}"
+        tags:
+          Stack: "Open-edX-{{ full_name }}-Security"
+          Project: "openedx"
+      register: "security_stack"

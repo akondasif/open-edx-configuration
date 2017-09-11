@@ -1,0 +1,101 @@
+- name: provision Open edX data servers
+  hosts: localhost
+  vars_files:
+    - [ "../params/{{ short_name }}-{{ env }}.yml", "../params/unizin-dev.yml" ]
+  tasks:
+    - name: default value for optional bypass parameter
+      set_fact:
+        bypass: "{{ short_name }}"
+      when: bypass is undefined
+
+    - set_fact:
+        DOMAIN: "{{ bypass }}.{{ hosted_zone_minus_period }}"
+        environment_name: "{{ env }}"
+        RdsEndpointAddress: "{{ rds_stack.stack_outputs.RdsEndpointAddress }}"
+
+    - include: wait_for_ssh_data_servers.yml
+      static: false
+      when: data_stack|changed
+
+- name: Update /etc/hosts on mongo servers
+  hosts: mongo
+  become: true
+  vars:
+    data_stack: "{{ hostvars['localhost']['data_stack'] }}"
+    mongo1: "{{ hostvars['localhost']['mongo1'] }}"
+    mongo2: "{{ hostvars['localhost']['mongo2'] }}"
+  tasks:
+    - include: update_hosts_mongo_servers.yml
+      static: false
+      when: data_stack|changed
+
+- name: Update /etc/hosts on common server
+  hosts: common
+  become: true
+  vars:
+    data_stack: "{{ hostvars['localhost']['data_stack'] }}"
+    mongo1: "{{ hostvars['localhost']['mongo1'] }}"
+    mongo2: "{{ hostvars['localhost']['mongo2'] }}"
+    common: "{{ hostvars['localhost']['common'] }}"
+  tasks:
+    - include: update_hosts_common_server.yml
+      static: false
+      when: data_stack|changed
+
+- name: install and configure New Relic Infrastructure
+  hosts: nonlocal
+  become: true
+  vars:
+    NEWRELIC_LICENSE_KEY: "{{ hostvars['localhost']['NEWRELIC_LICENSE_KEY'] }}"
+    software_key_prefix: "{{ hostvars['localhost']['DOMAIN'] }}"
+    environment_name: "{{ hostvars['localhost']['environment_name'] }}"
+    data_stack: "{{ hostvars['localhost']['data_stack'] }}"
+  roles:
+    - { role: newrelic-infra-unizin, when: data_stack|changed}
+
+- name: setup primary mongo server
+  hosts: mongo1
+  become: true
+  vars:
+    MONGO_ADMIN_PASSWORD: "{{ hostvars['localhost']['MONGO_ADMIN_PASSWORD'] }}"
+    EDXAPP_MONGO_PASSWORD: "{{ hostvars['localhost']['EDXAPP_MONGO_PASSWORD'] }}"
+    FORUM_MONGO_PASSWORD: "{{ hostvars['localhost']['FORUM_MONGO_PASSWORD'] }}"
+    data_stack: "{{ hostvars['localhost']['data_stack'] }}"
+  roles:
+    - { role: mongo_2_6, MONGO_CLUSTERED: false, when: data_stack|changed}
+
+- name: setup secondary mongo server
+  hosts: mongo2
+  become: true
+  vars:
+    MONGO_ADMIN_PASSWORD: "{{ hostvars['localhost']['MONGO_ADMIN_PASSWORD'] }}"
+    EDXAPP_MONGO_PASSWORD: "{{ hostvars['localhost']['EDXAPP_MONGO_PASSWORD'] }}"
+    FORUM_MONGO_PASSWORD: "{{ hostvars['localhost']['FORUM_MONGO_PASSWORD'] }}"
+    data_stack: "{{ hostvars['localhost']['data_stack'] }}"
+  roles:
+    - { role: mongo_2_6, MONGO_CLUSTERED: true, when: data_stack|changed}
+
+
+- name: Copy Oracle JDK to common server
+  hosts: common
+  tasks:
+    - name: use synchronize because copy generates MemoryError
+      synchronize:
+        src: /home/ubuntu/downloads/jdk-8u65-linux-x64.tar.gz
+        dest: /var/tmp/jdk-8u65-linux-x64.tar.gz
+
+- name: Configure RabbitMQ, ElasticSearch and xqueue
+  hosts: common
+  become: true
+  vars:
+    XQUEUE_MYSQL_PASSWORD: "{{ hostvars['localhost']['XQUEUE_MYSQL_PASSWORD'] }}"
+    COMMON_MYSQL_MIGRATE_PASS: "{{ hostvars['localhost']['COMMON_MYSQL_MIGRATE_PASS'] }}"
+    XQUEUE_MYSQL_HOST: "{{ hostvars['localhost']['RdsEndpointAddress'] }}"
+    data_stack: "{{ hostvars['localhost']['data_stack'] }}"
+    migrate_db: "yes"
+  gather_facts: true
+  roles:
+    - { role: rabbitmq, when: data_stack|changed}
+    - { role: elasticsearch, when: data_stack|changed}
+    - { role: nginx, nginx_sites: [ xqueue ], when: data_stack|changed}
+    - { role: xqueue, update_users: true, when: data_stack|changed}

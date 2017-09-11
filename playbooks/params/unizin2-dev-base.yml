@@ -1,0 +1,8 @@
+
+# Base paraneters for Unizin Open edX instance
+
+vpc: vpc-2ec89b4b
+base_ami: ami-11647307
+
+full_name: Unizin
+

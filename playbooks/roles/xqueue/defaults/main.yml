@@ -54,8 +54,8 @@ XQUEUE_LANG: 'en_US.UTF-8'
 
 XQUEUE_MYSQL_DB_NAME: 'xqueue'
 XQUEUE_MYSQL_USER: 'xqueue001'
-XQUEUE_MYSQL_PASSWORD: "{{ lookup('env','XQUEUE_MYSQL_PASSWORD') }}"
-XQUEUE_MYSQL_HOST: "{{ lookup('env','RDS') }}"
+XQUEUE_MYSQL_PASSWORD: "{{ XQUEUE_MYSQL_PASSWORD }}"
+XQUEUE_MYSQL_HOST: "{{ XQUEUE_MYSQL_HOST }}"
 XQUEUE_MYSQL_PORT: '3306'
 XQUEUE_NEWRELIC_APPNAME: "{{ COMMON_ENVIRONMENT }}-{{ COMMON_DEPLOYMENT }}-xqueue"
 # Set the number of workers explicitely for xqueue
@@ -63,7 +63,7 @@ XQUEUE_WORKERS: !!null
 XQUEUE_WORKERS_PER_QUEUE: 12
 
 # password for MySQL database migration
-COMMON_MYSQL_MIGRATE_PASS: "{{ lookup('env','COMMON_MYSQL_MIGRATE_PASS') }}"
+COMMON_MYSQL_MIGRATE_PASS: "{{ COMMON_MYSQL_MIGRATE_PASS }}"
 
 # Internal vars below this line
 #############################################

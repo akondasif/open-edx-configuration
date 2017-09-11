@@ -1,0 +1,20 @@
+- name: create MySQL RDS
+  hosts: localhost
+  vars_files:
+    - [ "../params/{{ short_name }}-{{ env }}.yml", "../params/unizin-dev.yml" ]
+  tasks:
+    - cloudformation:
+        stack_name: "Open-edX-{{ full_name }}-RDS"
+        region: us-east-1
+        state: present
+        template: "../cfn/rds-stack.template"
+        template_parameters:
+          UniversityShortName: "{{ short_name }}"
+          DBUser: "{{ MYSQL_ADMIN_USER }}"
+          DBPassword: "{{ MYSQL_ADMIN_PASSWORD }}"
+          RdsAllocatedStorage: 5
+          RdsSecurityGroupId: "{{ security_stack.stack_outputs.RdsSecurityGroup }}"
+        tags:
+          Stack: "Open-edX-{{ full_name }}-RDS"
+          Project: openedx
+      register: rds_stack

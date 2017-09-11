@@ -1,0 +1,39 @@
+# Create Open edX data stack
+#
+# Usage:
+#   ansible-playbook -vvvv create_stacks.yml -e env=... -e short_name=... -e bypass=...
+#     bypass is an optional parameter, its default value is short_name
+---
+- hosts: localhost
+  vars_files:
+    - [ "params/{{ short_name }}-{{ env }}.yml", "params/unizin-dev.yml" ]
+  tasks:
+    - name: default value for optional bypass parameter
+      set_fact:
+        bypass: "{{ short_name }}"
+      when: bypass is undefined
+
+    - name: set DOMAIN, PREVIEWURL, S3ST0RAGEBUCKET, NEWRELIC_LICENSE_KEY
+      set_fact:
+        DOMAIN: "{{ bypass }}.{{ hosted_zone_minus_period }}"
+        SOFTWARE_KEY_PREFIX: "{{ bypass }}.{{ hosted_zone_minus_period }}"
+        PREVIEWURL: "{{ bypass }}-preview.{{ hosted_zone_minus_period }}"
+        S3STORAGEBUCKET: "unizin-{{ env }}-openedx-{{ bypass }}"
+        NEWRELIC_LICENSE_KEY: "{{ NEWRELIC_LICENSE_KEY }}"
+
+
+- include: includes/create_security_stack.yml
+
+- include: includes/create_rds_stack.yml
+- include: includes/provision_rds.yml
+
+- include: includes/create_data_servers.yml
+- include: includes/provision_data_servers.yml
+
+- name: debug data stack play
+  hosts: localhost
+  tasks:
+    - debug: var=data_stack
+
+
+...

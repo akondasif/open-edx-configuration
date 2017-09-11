@@ -1,0 +1,9 @@
+
+- name: Update /etc/hosts
+  blockinfile:
+    dest: /etc/hosts
+    block: |
+      {{ mongo1 }} mongo1
+      {{ mongo2 }} mongo2
+      {{ common }} elastic rabbit
+    insertafter: "127.0.0.1 localhost"
