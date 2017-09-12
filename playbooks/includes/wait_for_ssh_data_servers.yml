@@ -3,7 +3,7 @@
   wait_for: host={{ mongo1 }} port=22 delay=30 timeout=320 state=started
 
 - name: Wait for SSH to mongo2 to come up
-  wait_for: host={{ mongo2 }} port=22 timeout=320 state=started
+  wait_for: host={{ mongo2 }} port=22 delay=30 timeout=320 state=started
 
 - name: Wait for SSH to common to come up
-  wait_for: host={{ common }} port=22 timeout=320 state=started
+  wait_for: host={{ common }} port=22 delay=30 timeout=320 state=started
