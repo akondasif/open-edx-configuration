@@ -1,0 +1,66 @@
+- name: provision Open edX app servers
+  hosts: localhost
+  vars_files:
+    - [ "../params/{{ short_name }}-{{ env }}.yml", "../params/unizin-dev.yml" ]
+  tasks:
+    - name: default value for optional bypass parameter
+      set_fact:
+        bypass: "{{ short_name }}"
+      when: bypass is undefined
+
+    - name: default value for optional bypass parameter
+      set_fact:
+        domain_prefix: "{{ bypass }}"
+      when: ("{{ env }}" == "prod")
+
+    - name: default value for optional bypass parameter
+      set_fact:
+        domain_prefix: "{{ bypass }}-openedx"
+      when: ("{{ env }}" == "dev")
+
+    - name: default value for optional bypass parameter
+      set_fact:
+        domain_suffix: ""
+      when: ("{{ env }}" == "prod")
+
+    - name: default value for optional bypass parameter
+      set_fact:
+        domain_suffix: "-openedx"
+      when: ("{{ env }}" == "dev")
+
+    - set_fact:
+        DOMAIN: "{{ domain_prefix }}.{{ hosted_zone_minus_period }}"
+        environment_name: "{{ env }}"
+        RdsEndpointAddress: "{{ rds_stack.stack_outputs.RdsEndpointAddress }}"
+
+    - include: wait_for_ssh_app_servers.yml
+      static: false
+      when: app_stack|changed
+
+- name: Update /etc/hosts on app servers
+  hosts: edxapp
+  become: true
+  vars:
+    app_stack: "{{ hostvars['localhost']['app_stack'] }}"
+    mongo1: "{{ hostvars['localhost']['mongo1'] }}"
+    mongo2: "{{ hostvars['localhost']['mongo2'] }}"
+    common: "{{ hostvars['localhost']['common'] }}"
+  tasks:
+    - include: update_hosts.yml
+      static: false
+      when: app_stack|changed
+
+- name: install and configure New Relic Infrastructure
+  hosts: edxapp
+  become: true
+  vars:
+    NEWRELIC_LICENSE_KEY: "{{ hostvars['localhost']['NEWRELIC_LICENSE_KEY'] }}"
+    software_key_prefix: "{{ hostvars['localhost']['DOMAIN'] }}"
+    environment_name: "{{ hostvars['localhost']['environment_name'] }}"
+    app_stack: "{{ hostvars['localhost']['app_stack'] }}"
+  roles:
+    - role: newrelic-infra-unizin
+      when: app_stack|changed
+
+- include: edx-stateless.yml
+

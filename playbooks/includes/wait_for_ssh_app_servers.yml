@@ -1,0 +1,3 @@
+
+- name: Wait for SSH to app to come up
+  wait_for: host={{ edxapp }} port=22 delay=30 timeout=320 state=started

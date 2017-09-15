@@ -13,11 +13,23 @@
         bypass: "{{ short_name }}"
       when: bypass is undefined
 
+    - name: default value for optional bypass parameter
+      set_fact:
+        domain_prefix: "{{ bypass }}"
+        preview_prefix: "{{ bypass }}_preview"
+      when: ("{{ env }}" == "prod")
+
+    - name: default value for optional bypass parameter
+      set_fact:
+        domain_prefix: "{{ bypass }}-openedx"
+        preview_prefix: "{{ bypass }}-preview-openedx"
+      when: ("{{ env }}" == "dev")
+
     - name: set DOMAIN, PREVIEWURL, S3ST0RAGEBUCKET, NEWRELIC_LICENSE_KEY
       set_fact:
-        DOMAIN: "{{ bypass }}.{{ hosted_zone_minus_period }}"
-        SOFTWARE_KEY_PREFIX: "{{ bypass }}.{{ hosted_zone_minus_period }}"
-        PREVIEWURL: "{{ bypass }}-preview.{{ hosted_zone_minus_period }}"
+        DOMAIN: "{{ domain_prefix }}.{{ hosted_zone_minus_period }}"
+        SOFTWARE_KEY_PREFIX: "{{ domain_prefix }}.{{ hosted_zone_minus_period }}"
+        PREVIEWURL: "{{ preview_prefix }}.{{ hosted_zone_minus_period }}"
         S3STORAGEBUCKET: "unizin-{{ env }}-openedx-{{ bypass }}"
         NEWRELIC_LICENSE_KEY: "{{ NEWRELIC_LICENSE_KEY }}"
 
@@ -30,10 +42,7 @@
 - include: includes/create_data_servers.yml
 - include: includes/provision_data_servers.yml
 
-- name: debug data stack play
-  hosts: localhost
-  tasks:
-    - debug: var=data_stack
-
+- include: includes/create_app_servers.yml
+- include: includes/provision_app_servers.yml
 
 ...

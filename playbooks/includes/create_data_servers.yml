@@ -9,11 +9,11 @@
         state: "present"
         template: "../cfn/data-stack.template"
         template_parameters:
-          VPC: "vpc-2ec89b4b"
+          VPC: "{{ vpc }}"
           UniversityShortName: "{{ short_name }}"
           MongoSecurityGroupId: "{{ security_stack.stack_outputs.MongoServerSecurityGroup }}"
           CommonSecurityGroupId: "{{ security_stack.stack_outputs.CommonServerSecurityGroup }}"
-          BaseAMI: "ami-fb3232ed"
+          BaseAMI: "{{ base_ami }}"
         tags:
           Stack: "Open-edX-{{ full_name }}-DataServers"
           Project: "openedx"

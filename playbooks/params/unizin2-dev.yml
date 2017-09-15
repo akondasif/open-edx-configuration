@@ -4,14 +4,16 @@
 build_sg: sg-f6c7f487
 full_name: Unizin2
 
-vpc: vpc-42840a25
-base_ami: ami-b5eee6ce
+vpc: vpc-2ec89b4b
+base_ami: ami-fb3232ed
+
+ssl_certificate_arn: arn:aws:acm:us-east-1:154191975022:certificate/753b27e6-b2ba-47b6-b2c1-fbd55ab166a9
 
 EDXAPP_AWS_ACCESS_KEY_ID: AKIAJKFW3GCONS3OMTKQ
 EDXAPP_AWS_SECRET_ACCESS_KEY: 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
 
-EMAIL_HOST_USER: michael.steiner
-EMAIL_HOST_PASSWORD: tr^Y+filUCr4571l
+EMAIL_HOST_USER: Unizin
+EMAIL_HOST_PASSWORD: Grapes2017
 
 hosted_zone_minus_period: testing.unizin.org
 hosted_zone_name: "{{ hosted_zone_minus_period }}."

@@ -8,8 +8,18 @@
         bypass: "{{ short_name }}"
       when: bypass is undefined
 
+    - name: default value for optional bypass parameter
+      set_fact:
+        domain_prefix: "{{ bypass }}"
+      when: ("{{ env }}" == "prod")
+
+    - name: default value for optional bypass parameter
+      set_fact:
+        domain_prefix: "{{ bypass }}-openedx"
+      when: ("{{ env }}" == "dev")
+
     - set_fact:
-        DOMAIN: "{{ bypass }}.{{ hosted_zone_minus_period }}"
+        DOMAIN: "{{ domain_prefix }}.{{ hosted_zone_minus_period }}"
         environment_name: "{{ env }}"
         RdsEndpointAddress: "{{ rds_stack.stack_outputs.RdsEndpointAddress }}"
 
@@ -38,7 +48,7 @@
     mongo2: "{{ hostvars['localhost']['mongo2'] }}"
     common: "{{ hostvars['localhost']['common'] }}"
   tasks:
-    - include: update_hosts_common_server.yml
+    - include: update_hosts.yml
       static: false
       when: data_stack|changed
 

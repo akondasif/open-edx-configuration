@@ -1,0 +1,41 @@
+- name: create Open edX app server
+  hosts: localhost
+  vars_files:
+    - [ "../params/{{ short_name }}-{{ env }}.yml", "../params/unizin-dev.yml" ]
+  tasks:
+    - cloudformation:
+        stack_name: "Open-edX-{{ full_name }}-AppServers"
+        region: "us-east-1"
+        state: "present"
+        template: "../cfn/app-stack.template"
+        template_parameters:
+          VPC: "{{ vpc }}"
+          UniversityShortName: "{{ short_name }}"
+          AltName: "{{ bypass }}"
+          HZName: "{{ hosted_zone_name }}"
+          AppSecurityGroupId: "{{ security_stack.stack_outputs.AppServerSecurityGroup }}"
+          ElbSecurityGroupId: "{{ security_stack.stack_outputs.ElbSecurityGroup }}"
+          BaseAMI: "{{ base_ami }}"
+          SSLCertificateARN: "{{ ssl_certificate_arn }}"
+        tags:
+          Stack: "Open-edX-{{ full_name }}-AppServers"
+          Project: "openedx"
+      register: "app_stack"
+
+
+    - name: set variables for server ips
+      set_fact:
+        MONGO_ADMIN_PASSWORD: "{{ MONGO_ADMIN_PASSWORD }}"
+        EDXAPP_MONGO_PASSWORD: "{{ EDXAPP_MONGO_PASSWORD }}"
+        FORUM_MONGO_PASSWORD: "{{ FORUM_MONGO_PASSWORD }}"
+        MYSQL_ADMIN_USER: "{{ MYSQL_ADMIN_USER }}"
+        MYSQL_ADMIN_PASSWORD: "{{ MYSQL_ADMIN_PASSWORD }}"
+        COMMON_MYSQL_MIGRATE_USER: "{{ COMMON_MYSQL_MIGRATE_USER }}"
+        COMMON_MYSQL_MIGRATE_PASS: "{{ COMMON_MYSQL_MIGRATE_PASS }}"
+        XQUEUE_MYSQL_PASSWORD: "{{ XQUEUE_MYSQL_PASSWORD }}"
+        edxapp: "{{ app_stack.stack_outputs.EdxAppIp }}"
+
+    - add_host:
+        name: "{{ edxapp }}"
+        groups: edxapp
+
