@@ -37,9 +37,32 @@ Resources:
     Metadata:
       AWS::CloudFormation::Init:
         config:
-          commands:
-            newrelic_gpg_key:
-              command: "curl https://download.newrelic.com/infrastructure_agent/gpg/newrelic-infra.gpg | sudo apt-key add -"
+          files:
+            # cfn-hup configuration
+            '/etc/cfn/cfn-hup.conf':
+              content: !Sub |
+                [main]
+                stack=${AWS::StackId}
+                region=${AWS::Region}
+              mode: 000400
+              owner: root
+              group: root
+            '/etc/cfn/hooks.d/cfn-auto-reloader.conf':
+              content: !Sub |
+                [cfn-auto-reloader-hook]
+                triggers=post.update
+                path=Resources.MongoPrimaryInstance.Metadata.AWS::CloudFormation::Init
+                action=/usr/local/bin/cfn-init -v --stack ${AWS::StackId} --resource MongoPrimaryInstance --region ${AWS::Region}
+                runas=root
+
+          services: 
+            sysvinit:
+              cfn-hup:
+                enabled: true
+                ensureRunning: true
+                files:
+                  - /etc/cfn/cfn-hup.conf
+                  - /etc/cfn/hooks.d/cfn-auto-reloader.conf
     Properties: 
       InstanceType: "t2.medium"
       ImageId: !Sub "${BaseAMI}"

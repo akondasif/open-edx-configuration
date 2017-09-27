@@ -28,11 +28,32 @@ Resources:
     Metadata:
       AWS::CloudFormation::Init:
         config:
-          commands:
-            newrelic:
-              command: "ansible-playbook -vvvv /var/tmp/unizin-open-edx/configuration/playbooks/setup_newrelic_infra.yml | tee /tmp/newrelic.out"
-              env:
-                NEWRELIC_LICENSE_KEY: "9de377b20faec94d4116a5bd10bb42ac8eba571d"
+          files:
+            # cfn-hup configuration
+            '/etc/cfn/cfn-hup.conf':
+              content: !Sub |
+                [main]
+                stack=${AWS::StackId}
+                region=${AWS::Region}
+              mode: 000400
+              owner: root
+              group: root
+            '/etc/cfn/hooks.d/cfn-auto-reloader.conf':
+              content: !Sub |
+                [cfn-auto-reloader-hook]
+                triggers=post.update
+                path=Resources.MongoPrimaryInstance.Metadata.AWS::CloudFormation::Init
+                action=/usr/local/bin/cfn-init -v --stack ${AWS::StackId} --resource MongoPrimaryInstance --region ${AWS::Region}
+                runas=root
+
+          services: 
+            sysvinit:
+              cfn-hup:
+                enabled: true
+                ensureRunning: true
+                files:
+                  - /etc/cfn/cfn-hup.conf
+                  - /etc/cfn/hooks.d/cfn-auto-reloader.conf
     Properties: 
       InstanceType: "t2.small"
       ImageId: !Sub "${BaseAMI}"
@@ -58,16 +79,38 @@ Resources:
     CreationPolicy:
       ResourceSignal:
         Timeout: PT10M
+
   MongoSecondaryInstance: 
     Type: "AWS::EC2::Instance"
     Metadata:
       AWS::CloudFormation::Init:
         config:
-          commands:
-            newrelic:
-              command: "ansible-playbook -vvvv /var/tmp/unizin-open-edx/configuration/playbooks/setup_newrelic_infra.yml | tee /tmp/newrelic.out"
-              env:
-                NEWRELIC_LICENSE_KEY: "9de377b20faec94d4116a5bd10bb42ac8eba571d"
+          files:
+            # cfn-hup configuration
+            '/etc/cfn/cfn-hup.conf':
+              content: !Sub |
+                [main]
+                stack=${AWS::StackId}
+                region=${AWS::Region}
+              mode: 000400
+              owner: root
+              group: root
+            '/etc/cfn/hooks.d/cfn-auto-reloader.conf':
+              content: !Sub |
+                [cfn-auto-reloader-hook]
+                triggers=post.update
+                path=Resources.MongoPrimaryInstance.Metadata.AWS::CloudFormation::Init
+                action=/usr/local/bin/cfn-init -v --stack ${AWS::StackId} --resource MongoPrimaryInstance --region ${AWS::Region}
+                runas=root
+
+          services: 
+            sysvinit:
+              cfn-hup:
+                enabled: true
+                ensureRunning: true
+                files:
+                  - /etc/cfn/cfn-hup.conf
+                  - /etc/cfn/hooks.d/cfn-auto-reloader.conf
     Properties: 
       InstanceType: "t2.small"
       ImageId: !Sub "${BaseAMI}"
@@ -93,16 +136,38 @@ Resources:
     CreationPolicy:
       ResourceSignal:
         Timeout: PT10M
+
   CommonInstance: 
     Type: "AWS::EC2::Instance"
     Metadata:
       AWS::CloudFormation::Init:
         config:
-          commands:
-            newrelic:
-              command: "ansible-playbook -vvvv /var/tmp/unizin-open-edx/configuration/playbooks/setup_newrelic_infra.yml | tee /tmp/newrelic.out"
-              env:
-                NEWRELIC_LICENSE_KEY: "9de377b20faec94d4116a5bd10bb42ac8eba571d"
+          files:
+            # cfn-hup configuration
+            '/etc/cfn/cfn-hup.conf':
+              content: !Sub |
+                [main]
+                stack=${AWS::StackId}
+                region=${AWS::Region}
+              mode: 000400
+              owner: root
+              group: root
+            '/etc/cfn/hooks.d/cfn-auto-reloader.conf':
+              content: !Sub |
+                [cfn-auto-reloader-hook]
+                triggers=post.update
+                path=Resources.MongoPrimaryInstance.Metadata.AWS::CloudFormation::Init
+                action=/usr/local/bin/cfn-init -v --stack ${AWS::StackId} --resource MongoPrimaryInstance --region ${AWS::Region}
+                runas=root
+
+          services: 
+            sysvinit:
+              cfn-hup:
+                enabled: true
+                ensureRunning: true
+                files:
+                  - /etc/cfn/cfn-hup.conf
+                  - /etc/cfn/hooks.d/cfn-auto-reloader.conf
     Properties: 
       InstanceType: "t2.large"
       ImageId: !Sub "${BaseAMI}"
