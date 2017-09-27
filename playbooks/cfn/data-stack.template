@@ -26,6 +26,8 @@ Resources:
   MongoPrimaryInstance: 
     Type: "AWS::EC2::Instance"
     Metadata:
+      # For reference see:
+      # https://stackoverflow.com/questions/39760158/ubuntu-could-not-enable-service-cfn-hup
       AWS::CloudFormation::Init:
         config:
           files:
