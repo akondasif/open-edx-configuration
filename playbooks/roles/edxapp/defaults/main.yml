@@ -614,20 +614,21 @@ EDXAPP_PROCTORING_BACKEND_PROVIDER:
   class: 'edx_proctoring.backends.null.NullBackendProvider'
   options: {}
 
+# list of paths to the comprehensive theme directories
 # Comprehensive Theming
 # Deprecated, maintained for backward compatibility
 EDXAPP_COMPREHENSIVE_THEME_DIR: ""
 
 # list of paths to the comprehensive theme directories
 EDXAPP_COMPREHENSIVE_THEME_DIRS:
-  - "{{ EDXAPP_COMPREHENSIVE_THEME_DIR }}"
+  - "{{ edxapp_theme_dir }}"
 
 # list of paths to the comprehensive theme locale directories
 EDXAPP_COMPREHENSIVE_THEME_LOCALE_PATHS: []
 
 # Name of the default site theme
 EDXAPP_DEFAULT_SITE_THEME: ""
-EDXAPP_ENABLE_COMPREHENSIVE_THEMING: false
+EDXAPP_ENABLE_COMPREHENSIVE_THEMING: true
 
 # Git repo for the comprehensive theme (if using a comprehensive theme
 # other than the ones bundled with edx/platform)
