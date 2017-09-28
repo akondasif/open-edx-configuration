@@ -1,0 +1,43 @@
+
+# Open edX ansible/cloudformation build paraneters for Kari Open edX instance
+
+build_sg: 
+full_name: Kari
+
+vpc: 
+base_ami: 
+
+ssl_certificate_arn: 
+
+EDXAPP_AWS_ACCESS_KEY_ID: 
+EDXAPP_AWS_SECRET_ACCESS_KEY: 
+
+EMAIL_HOST_USER: 
+EMAIL_HOST_PASSWORD: 
+
+hosted_zone_minus_period: 
+hosted_zone_name: "{{ hosted_zone_minus_period }}."
+
+NEWRELIC_LICENSE_KEY: 
+
+# MySQL
+MYSQL_ADMIN_USER: 'root'
+MYSQL_ADMIN_PASSWORD: 
+
+COMMON_MYSQL_MIGRATE_USER: 'migrate'
+COMMON_MYSQL_MIGRATE_PASS: 
+
+COMMON_MYSQL_ADMIN_PASS: 
+COMMON_MYSQL_READ_ONLY_PASS: 
+
+EDXAPP_MYSQL_PASSWORD: 
+EDXAPP_MYSQL_PASSWORD_READ_ONLY: 
+EDXAPP_MYSQL_PASSWORD_ADMIN: "{{ MYSQL_ADMIN_PASSWORD }}"
+
+XQUEUE_MYSQL_PASSWORD: 
+
+# MongoDB
+MONGO_ADMIN_PASSWORD: 
+EDXAPP_MONGO_PASSWORD: 
+FORUM_MONGO_PASSWORD: 
+
