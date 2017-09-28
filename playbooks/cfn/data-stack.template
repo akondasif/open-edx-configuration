@@ -101,8 +101,8 @@ Resources:
               content: !Sub |
                 [cfn-auto-reloader-hook]
                 triggers=post.update
-                path=Resources.MongoPrimaryInstance.Metadata.AWS::CloudFormation::Init
-                action=/usr/local/bin/cfn-init -v --stack ${AWS::StackId} --resource MongoPrimaryInstance --region ${AWS::Region}
+                path=Resources.MongoSecondaryInstance.Metadata.AWS::CloudFormation::Init
+                action=/usr/local/bin/cfn-init -v --stack ${AWS::StackId} --resource MongoSecondaryInstance --region ${AWS::Region}
                 runas=root
 
           services: 
@@ -158,8 +158,8 @@ Resources:
               content: !Sub |
                 [cfn-auto-reloader-hook]
                 triggers=post.update
-                path=Resources.MongoPrimaryInstance.Metadata.AWS::CloudFormation::Init
-                action=/usr/local/bin/cfn-init -v --stack ${AWS::StackId} --resource MongoPrimaryInstance --region ${AWS::Region}
+                path=Resources.CommonInstance.Metadata.AWS::CloudFormation::Init
+                action=/usr/local/bin/cfn-init -v --stack ${AWS::StackId} --resource CommonInstance --region ${AWS::Region}
                 runas=root
 
           services: 

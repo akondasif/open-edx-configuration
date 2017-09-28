@@ -53,8 +53,8 @@ Resources:
               content: !Sub |
                 [cfn-auto-reloader-hook]
                 triggers=post.update
-                path=Resources.MongoPrimaryInstance.Metadata.AWS::CloudFormation::Init
-                action=/usr/local/bin/cfn-init -v --stack ${AWS::StackId} --resource MongoPrimaryInstance --region ${AWS::Region}
+                path=Resources.EdxAppInstance.Metadata.AWS::CloudFormation::Init
+                action=/usr/local/bin/cfn-init -v --stack ${AWS::StackId} --resource EdxAppInstance --region ${AWS::Region}
                 runas=root
 
           services: 
