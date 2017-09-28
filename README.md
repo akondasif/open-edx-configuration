@@ -1,41 +1,116 @@
-# Configuration Management
+## Open edX deployment in AWS
 
-## Introduction
+#### Instructions for cloning the Unizin `unizin-open-edx` repo
+- Perform the following steps:
+  - `cd /var/tmp`
+  - `git clone --recursive https://github.com/unizin/unizin-open-edx.git`
+  - `cd unizin-open-edx/configuration`
+    - This git submodule is a fork of `https://github.com/edx/configuration`
+    - Our Open edX deployments require Unizin specific branches of the Open edX `configuration` repo
+      - Unizin branches of this repo will have names such as `ficus.1.unizin`
+        - Here `ficus.1` is the first point release of Open edX release `ficus`
+        - The Unizin branch contains fairly substantial changes from the corresponding Open edX point release branch
+    - Check out the appropriate Unizin branch of the `configuration` repo, for instance:
+      - `git checkout `ficus.1.unizin`
+    - Typically, deployments will use the latest available Unizin branch derived from an Open edX point release
 
-The goal of the edx/configuration project is to provide a simple, but
-flexible, way for anyone to stand up an instance of Open edX that is
-fully configured and ready-to-go.
+#### Create Open edX base Amazon Machine Image (AMI)
 
-Before getting started, please look at the [Open EdX Installation options](https://open.edx.org/installation-options), to see which method for deploying OpenEdX is right for you.
+- Launch an EC2 instance from a base Ubuntu 16.04 AMI
+  - Accept default settings except as noted below
+  - Add a __Name__ tag with value __openedx-build__
+  - Configure __Security Group__:
+    - Inbound: allow __ssh access only__
+    - Outbound: allow all traffic on all ports
+  - Add an EC2 key pair __openedx-staging__
+    - Download `openedx-staging.pem`
+- ssh into __openedx-build__
+- Update and upgrade apt to get the latest packages
+- Clone the Unizin Open edX repo to `/var/tmp/unizin-open-edx`
+  - Check out the appropriate branch of the `configuration` submodule (currently `ficus.1.unizin`)
+    - `cd configuration`
+    - `git checkout ficus.1.unizin`
+    - `cd ..`
+  - Run `install_package_dependencies.sh` to install required packages and dependencies
+    - Required Python modules are specified in [requirements.txt][2]
+- Create AMI named `openedx-base-ami` from the __openedx-build__ EC2 instance 
+  - This AMI will be used as base for all EC2 Open edX server instances
 
-Building the platform takes place in two phases:
+#### Create Open edX build server base Amazon Machine Image (AMI)
 
-* Infrastructure provisioning
-* Service configuration
+- On __openedx-build__ server, perform the following additional setup:
+  - Create `/etc/ansible/hosts` file as described [here][3]
+    - This simplifies `ansible-playbook` commands that execute on `localhost`
+      - It eliminates the need for such commands to specify `-i "localhost,"` and `-c local`
+  - Create directory `/home/ubuntu/downloads`
+  - Download Oracle JDK tarball `jdk-8u65-linux-x64.tar.gz` and copy it to to __openedx-build__ (use `scp`)
+    - use `/home/ubuntu/downloads/` as destination path for scp command
+  - Copy the `openedx-staging.pem` private key file to __openedx-build__ (use `scp`)
+    - use `/home/ubuntu/` as destination path for scp command
+- Create AMI named `openedx-base-build` from the __openedx-build__ EC2 instance
+  - This will be used as base AMI for build servers of Open edX instances
 
-As much as possible, we have tried to keep a clean distinction between
-provisioning and configuration.  You are not obliged to use our tools
-and are free to use one, but not the other.  The provisioning phase
-stands-up the required resources and tags them with role identifiers
-so that the configuration tool can come in and complete the job.
+#### Build Open edX AWS CloudFormation stacks
 
-__Note__: The Cloudformation templates used for infrastructure provisioning 
-are no longer maintained. We are working to move to a more modern and flexible tool.
+Note: Substantial work has gone into simplifiying these steps, the simplified steps will be put in place shortly.
 
-The reference platform is provisioned using an Amazon
-[CloudFormation](http://aws.amazon.com/cloudformation/) template.
-When the stack has been fully created you will have a new AWS Virtual
-Private Cloud with hosts for the core Open edX services.  This template
-will build quite a number of AWS resources that cost money, so please
-consider this before you start.
+- There are three separate sets of Open edX AWS CloudFormation stacks:
+  - build stack (build server security group and ec2 instance)
+  - base stacks (IAM user and S3 buckets)
+  - main Open edX stack
+    - Security Groups
+    - MySQL RDS
+    - Data servers
+    - App server and Elastic Load Balancer
+- ssh into appropriate build server
+  - __openedx-build__ server for build stack and base stacks
+  - __openedx-\<university short name\>-build__ server for remaining stacks
+- Set AWS access key environment variables:
+  - Use access key and secret for IAM user __openedx-build-user__
+    - `export AWS_ACCESS_KEY_ID=...`
+    - `export AWS_SECRET_ACCESS_KEY=...`
+  - If building in AWS prod account also set the environment variable:
+    - `export AWS_MFA_SERIAL=arn:aws:iam::489515563883:mfa/<user name>`
+ - If need be, pull current sources for the `unizin-open-edx` repo and/or its `configuration` submodule from GitHub
+  - Change directory to `/var/tmp/unizin-open-edx/configuration/playbook`
+- Deploying Open edX to the Unizin AWS prod account requires MFA
+  - Copy the `mfa_wrap.sh` script into this directory (from the root of the Unizin `ansible` repo in GitHub)
+  - Run the command `. ./mfa_wrap.sh`
+- The ansible playbook to run is:
+  - `create_build_stack` for build stack
+  - `create_base_stacks` for base stacks
+  - `create_stacks` for remaining Open edX stacks
+- Run ansible playbook:
+  - `ansible-playbook -vvvv <playbook>.yml -e env=<dev or prod> -e short_name=<university short name>` 
+    - If deploying to the Unizin AWS prod account, this command needs to be preceded by `mfa_wrap <MFA code>`
+    - The create_stacks playbook requires the additional command line argument `--private-key=/home/ubuntu/openedx-staging.pem`
 
-The configuration phase is managed by [Ansible](http://ansible.com/).
-We have provided a number of playbooks that will configure each of
-the Open edX services.
+#### Provision RDS and EC2 instances
 
-__Important__: 
-The Open edX configuration scripts need to be run as root on your servers and will make changes to service configurations including, but not limited to, sshd, dhclient, sudo, apparmor and syslogd. Our scripts are made available as we use them and they implement our best practices. We strongly recommend that you review everything that these scripts will do before running them against your servers. We also recommend against running them against servers that are hosting other applications. No warranty is expressed or implied.
+- The `create_stacks` playbook creates/updates the shell script `/home/ubuntu/env.sh`.
+  - Source this script to set a number of environment variables including:
+    - `APP`
+    - `MONGO1`
+    - `MONGO2`
+    - `COMMON`
+    - `ELASTIC`
+    - `RABBIT`
+- The remaining deployment steps are performed via the `provision_resources.sh` shell script:
+  - provision MySQL RDS
+    - `./provision_resources.sh rds`
+  - provision EC2 instance for primary MongoDB database
+    - `./provision_resources.sh mongo1`
+  - provision EC2 instance for secondary MongoDB database
+    - `./provision_resources.sh mongo2`
+  - provision common EC2 instance for Elastic, RabbitMQ, and XQueue
+    - `./provision_resources.sh common`
+  - provision primary mongo EC2 instance for discussion forums
+    - `./provision_resources.sh forums`
+  - provision EC2 instance for Open edX LMS and CMS
+    - `./provision_resources.sh app`
 
-For more information including installation instruction please see the [OpenEdX Wiki](https://openedx.atlassian.net/wiki/display/OpenOPS/Open+edX+Operations+Home).
+[1]: https://docs.newrelic.com/docs/infrastructure/new-relic-infrastructure/installation/install-infrastructure-linux
+[2]: https://github.com/unizin/unizin-open-edx-configuration/blob/ficus.1.unizin/requirements.txt
+[3]: http://ansible.pickle.io/post/86598332429/running-ansible-playbook-in-localhost
+[4]: https://github.com/unizin/unizin-open-edx-configuration/blob/ficus.1.unizin/playbooks/roles/create_instances/defaults/main.yml
 
-For info on any large recent changes please see the [change log](https://github.com/edx/configuration/blob/master/CHANGELOG.md).
