@@ -25,15 +25,12 @@
   - Add an EC2 key pair __openedx-staging__
     - Download `openedx-staging.pem`
 - ssh into __openedx-build__
-- Update and upgrade apt to get the latest packages
-- Clone the Unizin Open edX repo to `/var/tmp/unizin-open-edx`
+- Clone the Unizin Open edX repo to `/var/tmp/open-edx-configuration`
   - Check out the appropriate branch of the `configuration` submodule (currently `ficus.1.unizin`)
-    - `cd configuration`
-    - `git checkout ficus.1.unizin`
-    - `cd ..`
-  - Run `install_package_dependencies.sh` to install required packages and dependencies
+    - `git checkout ficus.4`
+  - Run `./install_package_dependencies.sh` to install required packages and dependencies
     - Required Python modules are specified in [requirements.txt][2]
-- Create AMI named `openedx-base-ami` from the __openedx-build__ EC2 instance 
+- Create AMI named `openedx-base` from the __openedx-build__ EC2 instance 
   - This AMI will be used as base for all EC2 Open edX server instances
 
 #### Create Open edX build server base Amazon Machine Image (AMI)
