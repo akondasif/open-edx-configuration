@@ -29,14 +29,14 @@
   - Check out the appropriate branch of the `configuration` submodule (currently `ficus.1.unizin`)
     - `git checkout ficus.4`
   - Run `./install_package_dependencies.sh` to install required packages and dependencies
-    - Required Python modules are specified in [requirements.txt][2]
+    - Required Python modules are specified in [requirements.txt][1]
 - Create AMI named `openedx-base` from the __openedx-build__ EC2 instance 
   - This AMI will be used as base for all EC2 Open edX server instances
 
 #### Create Open edX build server base Amazon Machine Image (AMI)
 
 - On __openedx-build__ server, perform the following additional setup:
-  - Create `/etc/ansible/hosts` file as described [here][3]
+  - Create `/etc/ansible/hosts` file as described [here][2]
     - This simplifies `ansible-playbook` commands that execute on `localhost`
       - It eliminates the need for such commands to specify `-i "localhost,"` and `-c local`
   - Create directory `/home/ubuntu/downloads`
@@ -106,8 +106,6 @@ Note: Substantial work has gone into simplifiying these steps, the simplified st
   - provision EC2 instance for Open edX LMS and CMS
     - `./provision_resources.sh app`
 
-[1]: https://docs.newrelic.com/docs/infrastructure/new-relic-infrastructure/installation/install-infrastructure-linux
-[2]: https://github.com/unizin/unizin-open-edx-configuration/blob/ficus.1.unizin/requirements.txt
-[3]: http://ansible.pickle.io/post/86598332429/running-ansible-playbook-in-localhost
-[4]: https://github.com/unizin/unizin-open-edx-configuration/blob/ficus.1.unizin/playbooks/roles/create_instances/defaults/main.yml
+[1]: https://github.com/michaelsteiner19/open-edx-configuration/blob/improved-automation/requirements.txt
+[2]: http://ansible.pickle.io/post/86598332429/running-ansible-playbook-in-localhost
 
