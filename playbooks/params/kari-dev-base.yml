@@ -1,4 +1,7 @@
 
 # Base paraneters for Kari Open edX instance
 
+vpc: vpc-...
+base_ami: ami-...
+
 full_name: Kari
