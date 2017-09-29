@@ -3,16 +3,15 @@
 #### Instructions for cloning the Unizin `unizin-open-edx` repo
 - Perform the following steps:
   - `cd /var/tmp`
-  - `git clone --recursive https://github.com/unizin/unizin-open-edx.git`
-  - `cd unizin-open-edx/configuration`
-    - This git submodule is a fork of `https://github.com/edx/configuration`
-    - Our Open edX deployments require Unizin specific branches of the Open edX `configuration` repo
-      - Unizin branches of this repo will have names such as `ficus.1.unizin`
-        - Here `ficus.1` is the first point release of Open edX release `ficus`
-        - The Unizin branch contains fairly substantial changes from the corresponding Open edX point release branch
-    - Check out the appropriate Unizin branch of the `configuration` repo, for instance:
-      - `git checkout `ficus.1.unizin`
-    - Typically, deployments will use the latest available Unizin branch derived from an Open edX point release
+  - `git clone https://github.com/michaelsteiner19/open-edx-configuration.git`
+  - `cd open-edx-configuration`
+    - Our Open edX deployments require fork-specific branches of the Open edX `configuration` repo
+      - Such branches of this repo will have names such as `ficus.4`
+        - Here `ficus.4` is the 4th point release of Open edX release `ficus`
+        - This branch contains fairly substantial changes from the corresponding Open edX point release branch
+    - Check out the appropriate branch of the `open-edx-configuration` repo, for instance:
+      - `git checkout `ficus.4`
+    - Typically, deployments will use the latest available fork branch derived from an Open edX point release
 
 #### Create Open edX base Amazon Machine Image (AMI)
 
@@ -26,7 +25,7 @@
     - Download `openedx-staging.pem`
 - ssh into __openedx-build__
 - Clone the Unizin Open edX repo to `/var/tmp/open-edx-configuration`
-  - Check out the appropriate branch of the `configuration` submodule (currently `ficus.1.unizin`)
+  - Check out the appropriate branch of the `configuration` submodule (currently `ficus.4`)
     - `git checkout ficus.4`
   - Run `./install_package_dependencies.sh` to install required packages and dependencies
     - Required Python modules are specified in [requirements.txt][1]
@@ -106,6 +105,6 @@ Note: Substantial work has gone into simplifiying these steps, the simplified st
   - provision EC2 instance for Open edX LMS and CMS
     - `./provision_resources.sh app`
 
-[1]: https://github.com/michaelsteiner19/open-edx-configuration/blob/improved-automation/requirements.txt
+[1]: https://github.com/michaelsteiner19/open-edx-configuration/blob/improved_automation/requirements.txt
 [2]: http://ansible.pickle.io/post/86598332429/running-ansible-playbook-in-localhost
 
