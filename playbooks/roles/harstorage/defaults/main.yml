@@ -49,7 +49,7 @@ harstorage_python_pkgs:
 
 harstorage_redhat_pkgs: []
 harstorage_port: "5000"
-harstorage_host: "0.0.0.0"
+harstorage_host: "127.0.0.1"
 harstorage_version: "1.0"
 
 # mongo packages
